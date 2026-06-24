@@ -22,7 +22,8 @@ WORKDIR /var/www/html
 
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader \
+RUN composer require symfony/resend-mailer --no-interaction --no-dev \
+    && composer install --no-dev --optimize-autoloader \
     && npm install \
     && npm run build \
     && npm prune --production
