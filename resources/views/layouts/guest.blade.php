@@ -8,8 +8,8 @@
 
     <link rel="canonical" href="{{ url()->current() }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/TLK.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/TLK.png') }}">
+    <link rel="icon" type="image/webp" sizes="512x512" href="{{ asset('images/TLK.webp') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/TLK.webp') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
