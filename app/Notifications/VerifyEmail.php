@@ -16,6 +16,6 @@ class VerifyEmail extends VerifyEmailBase
             url: $verificationUrl,
             user: $notifiable->displayName(),
             expire: config('auth.verification.expire', 60),
-        ));
+        ))->to($notifiable);
     }
 }
