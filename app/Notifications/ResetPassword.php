@@ -16,6 +16,6 @@ class ResetPassword extends ResetPasswordBase
             url: $resetUrl,
             user: $notifiable->displayName(),
             expire: config('auth.passwords.' . config('auth.defaults.passwords') . '.expire', 60),
-        ))->to($notifiable->email);
+        ));
     }
 }
