@@ -32,7 +32,7 @@
 
             <div class="field">
                 <label for="email">Email</label>
-                <input id="email" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="nama@email.com" class="input">
+                <input id="email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="nama@email.com" class="input">
                 <x-input-error :messages="$errors->get('email')" />
             </div>
 
@@ -91,7 +91,7 @@
 
             <div class="field field-group">
                 <label for="supervisor_email">Email</label>
-                <input id="supervisor_email" type="email" name="email" :value="old('email')" required autocomplete="username" placeholder="pembimbing@telkom.co.id" class="input">
+                <input id="supervisor_email" type="email" name="email" value="{{ old('email') }}" required autocomplete="username" placeholder="pembimbing@telkom.co.id" class="input">
                 <x-input-error :messages="$errors->get('email')" />
             </div>
 

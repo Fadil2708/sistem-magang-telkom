@@ -13,7 +13,7 @@
 
         <div class="field">
             <label for="email">Email</label>
-            <input id="email" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="nama@email.com" class="input">
+            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="nama@email.com" class="input">
             <x-input-error :messages="$errors->get('email')" />
         </div>
 
