@@ -38,6 +38,8 @@ class InternProfile extends Model
         return !empty($this->full_name)
             && !empty($this->phone)
             && !empty($this->student_id)
-            && !empty($this->institution_name);
+            && !empty($this->institution_name)
+            && !empty($this->major)
+            && !empty($this->cv_url);
     }
 }
