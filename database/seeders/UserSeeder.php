@@ -13,12 +13,12 @@ class UserSeeder extends Seeder
     {
         User::updateOrCreate(
             ['email' => 'admin@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'admin'],
+            ['password' => bcrypt('password'), 'role' => 'admin', 'email_verified_at' => now()],
         );
 
         $supervisor1 = User::firstOrCreate(
             ['email' => 'supervisor1@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'supervisor'],
+            ['password' => bcrypt('password'), 'role' => 'supervisor', 'email_verified_at' => now()],
         );
         SupervisorProfile::firstOrCreate(
             ['user_id' => $supervisor1->id],
@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
 
         $supervisor2 = User::firstOrCreate(
             ['email' => 'supervisor2@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'supervisor'],
+            ['password' => bcrypt('password'), 'role' => 'supervisor', 'email_verified_at' => now()],
         );
         SupervisorProfile::firstOrCreate(
             ['user_id' => $supervisor2->id],
@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
 
         $intern1 = User::firstOrCreate(
             ['email' => 'intern1@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'intern'],
+            ['password' => bcrypt('password'), 'role' => 'intern', 'email_verified_at' => now()],
         );
         InternProfile::firstOrCreate(
             ['user_id' => $intern1->id],
@@ -45,7 +45,7 @@ class UserSeeder extends Seeder
 
         $intern2 = User::firstOrCreate(
             ['email' => 'intern2@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'intern'],
+            ['password' => bcrypt('password'), 'role' => 'intern', 'email_verified_at' => now()],
         );
         InternProfile::firstOrCreate(
             ['user_id' => $intern2->id],
@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
 
         $intern3 = User::firstOrCreate(
             ['email' => 'intern3@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'intern'],
+            ['password' => bcrypt('password'), 'role' => 'intern', 'email_verified_at' => now()],
         );
         InternProfile::firstOrCreate(
             ['user_id' => $intern3->id],

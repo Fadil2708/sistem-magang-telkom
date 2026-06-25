@@ -95,6 +95,8 @@ return [
     |
     */
 
+    'seeder_token' => env('SEEDER_TOKEN'),
+
     'cipher' => 'AES-256-CBC',
 
     'key' => env('APP_KEY'),

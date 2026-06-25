@@ -38,6 +38,25 @@ use App\Livewire\Supervisor\ReportReview;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\WelcomeController;
+use Illuminate\Support\Facades\Artisan;
+
+Route::get('/seed', function () {
+    $lockFile = storage_path('app/seeded.lock');
+    if (file_exists($lockFile)) {
+        abort(403, 'Seeding sudah pernah dilakukan.');
+    }
+
+    $token = request('token');
+    if (!$token || $token !== config('app.seeder_token')) {
+        abort(403, 'Token tidak valid.');
+    }
+
+    Artisan::call('db:seed', ['--force' => true]);
+
+    file_put_contents($lockFile, now());
+
+    return response('✅ Seeder berhasil & otomatis dinonaktifkan.');
+});
 
 Route::get('/', WelcomeController::class);
 

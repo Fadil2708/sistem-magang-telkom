@@ -19,12 +19,12 @@ class PendingInternSeeder extends Seeder
     {
         $admin = User::firstOrCreate(
             ['email' => 'admin@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'admin'],
+            ['password' => bcrypt('password'), 'role' => 'admin', 'email_verified_at' => now()],
         );
 
         $supervisor = User::firstOrCreate(
             ['email' => 'supervisor1@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'supervisor'],
+            ['password' => bcrypt('password'), 'role' => 'supervisor', 'email_verified_at' => now()],
         );
         SupervisorProfile::firstOrCreate(
             ['user_id' => $supervisor->id],
@@ -39,7 +39,7 @@ class PendingInternSeeder extends Seeder
 
         $intern = User::firstOrCreate(
             ['email' => 'nilai-siap@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'intern'],
+            ['password' => bcrypt('password'), 'role' => 'intern', 'email_verified_at' => now()],
         );
         InternProfile::firstOrCreate(
             ['user_id' => $intern->id],

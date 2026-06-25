@@ -22,12 +22,12 @@ class CertificateTestSeeder extends Seeder
         // ─── 1. Admin + Supervisor (firstOrCreate agar aman) ─────────
         $admin = User::firstOrCreate(
             ['email' => 'admin@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'admin'],
+            ['password' => bcrypt('password'), 'role' => 'admin', 'email_verified_at' => now()],
         );
 
         $supervisor = User::firstOrCreate(
             ['email' => 'supervisor1@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'supervisor'],
+            ['password' => bcrypt('password'), 'role' => 'supervisor', 'email_verified_at' => now()],
         );
         SupervisorProfile::firstOrCreate(
             ['user_id' => $supervisor->id],
@@ -43,7 +43,7 @@ class CertificateTestSeeder extends Seeder
         // ─── 2. Intern baru untuk tes ────────────────────────────────
         $intern = User::firstOrCreate(
             ['email' => 'test-cert@telkom-skb.com'],
-            ['password' => bcrypt('password'), 'role' => 'intern'],
+            ['password' => bcrypt('password'), 'role' => 'intern', 'email_verified_at' => now()],
         );
         InternProfile::firstOrCreate(
             ['user_id' => $intern->id],

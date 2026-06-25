@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Vacancy;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class VacancySeeder extends Seeder
 {
@@ -14,7 +13,6 @@ class VacancySeeder extends Seeder
         $admin = User::where('role', 'admin')->first();
 
         Vacancy::create([
-            'id'                   => (string) Str::uuid(),
             'created_by'           => $admin->id,
             'title'                => 'Software Developer Intern',
             'division'             => 'IT Development',
@@ -28,7 +26,6 @@ class VacancySeeder extends Seeder
         ]);
 
         Vacancy::create([
-            'id'                   => (string) Str::uuid(),
             'created_by'           => $admin->id,
             'title'                => 'Network Engineer Intern',
             'division'             => 'IT Infrastructure',
@@ -42,7 +39,6 @@ class VacancySeeder extends Seeder
         ]);
 
         Vacancy::create([
-            'id'                   => (string) Str::uuid(),
             'created_by'           => $admin->id,
             'title'                => 'UI/UX Designer Intern',
             'division'             => 'Digital Experience',
@@ -56,7 +52,6 @@ class VacancySeeder extends Seeder
         ]);
 
         Vacancy::create([
-            'id'                   => (string) Str::uuid(),
             'created_by'           => $admin->id,
             'title'                => 'Data Analyst Intern',
             'division'             => 'Business Intelligence',
