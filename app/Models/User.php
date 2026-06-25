@@ -77,6 +77,18 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->notify(new \App\Notifications\ResetPassword($token));
     }
 
+    public function delete(): ?bool
+    {
+        if ($this->isIntern()) {
+            foreach ($this->internships as $internship) {
+                $internship->certificate()?->delete();
+                $internship->delete();
+            }
+        }
+
+        return parent::delete();
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
