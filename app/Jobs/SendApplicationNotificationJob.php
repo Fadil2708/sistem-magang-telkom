@@ -50,13 +50,19 @@ class SendApplicationNotificationJob implements ShouldQueue, ShouldBeEncrypted
             return;
         }
 
-        Mail::to($recipient)->send(
-            new \App\Mail\ApplicationNotificationMail($view, $subject, $data)
-        );
+        try {
+            Mail::to($recipient)->send(
+                new \App\Mail\ApplicationNotificationMail($view, $subject, $data)
+            );
+            Log::info("[SendApplicationNotificationJob] Email sent to {$recipient} type={$type}");
+        } catch (\Throwable $e) {
+            Log::error("[SendApplicationNotificationJob] Failed: {$e->getMessage()} file={$e->getFile()}:{$e->getLine()}");
+            throw $e;
+        }
     }
 
     public function failed(?\Throwable $exception): void
     {
-        Log::error("[SendApplicationNotificationJob] Failed: {$exception->getMessage()}");
+        Log::error("[SendApplicationNotificationJob] Failed after retries: {$exception->getMessage()}");
     }
 }

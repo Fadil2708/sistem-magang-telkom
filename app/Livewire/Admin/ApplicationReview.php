@@ -6,6 +6,7 @@ use App\Jobs\SendApplicationNotificationJob;
 use App\Models\Application;
 use App\Services\ApplicationService;
 use App\Services\NotificationService;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -119,6 +120,7 @@ class ApplicationReview extends Component
                 $this->dispatch('toast', message: 'Status lamaran berhasil diperbarui.', type: 'success');
             }
         } catch (\Exception $e) {
+            Log::error("[ApplicationReview] updateStatus error: {$e->getMessage()} file={$e->getFile()}:{$e->getLine()}");
             $this->dispatch('toast', message: $e->getMessage(), type: 'error');
             return;
         }
