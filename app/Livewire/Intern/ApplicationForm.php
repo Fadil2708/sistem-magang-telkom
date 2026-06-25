@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Intern;
 
-use App\Jobs\SendApplicationNotificationJob;
 use App\Models\Vacancy;
 use App\Services\ApplicationService;
 use App\Services\NotificationService;
@@ -52,7 +51,7 @@ class ApplicationForm extends Component
     {
         try {
             $application = $service->apply(auth()->user(), $this->vacancy->id);
-            SendApplicationNotificationJob::dispatch(
+            $this->notificationService->sendEmail(
                 $this->notificationService->sendApplicationSubmitted($application)
             );
             $this->hasApplied = true;

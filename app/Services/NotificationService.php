@@ -2,10 +2,13 @@
 
 namespace App\Services;
 
+use App\Mail\ApplicationNotificationMail;
 use App\Models\Application;
 use App\Models\Certificate;
 use App\Models\FinalReport;
 use App\Models\Logbook;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class NotificationService
 {
@@ -137,5 +140,41 @@ class NotificationService
                 'activity_date' => $logbook->activity_date?->format('Y-m-d'),
             ],
         ];
+    }
+
+    public function sendEmail(array $notificationData): void
+    {
+        $type = $notificationData['type'];
+        $recipient = $notificationData['recipient'];
+        $data = $notificationData['data'];
+
+        $view = match ($type) {
+            'application.submitted' => 'emails.application.submitted',
+            'application.status_updated' => 'emails.application.status-updated',
+            'application.interview_scheduled' => 'emails.application.interview-scheduled',
+            'application.decision' => 'emails.application.decision',
+            default => null,
+        };
+
+        $subject = match ($type) {
+            'application.submitted' => 'Lamaran Terkirim',
+            'application.status_updated' => 'Status Lamaran Diperbarui',
+            'application.interview_scheduled' => 'Jadwal Wawancara',
+            'application.decision' => 'Keputusan Lamaran',
+            default => 'Notifikasi Lamaran',
+        };
+
+        if (!$view || !$recipient) {
+            return;
+        }
+
+        try {
+            Mail::to($recipient)->send(
+                new ApplicationNotificationMail($view, $subject, $data)
+            );
+        } catch (\Throwable $e) {
+            Log::error("[NotificationService] sendEmail failed: {$e->getMessage()} type={$type}");
+            throw $e;
+        }
     }
 }

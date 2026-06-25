@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Intern;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Application\StoreApplicationRequest;
 use App\Http\Resources\ApplicationResource;
-use App\Jobs\SendApplicationNotificationJob;
 use App\Models\Application;
 use App\Services\ApplicationService;
 use App\Services\NotificationService;
@@ -29,9 +28,9 @@ class ApplicationController extends Controller
                 $request->vacancy_id
             );
 
-            dispatch(new SendApplicationNotificationJob(
+            $this->notificationService->sendEmail(
                 $this->notificationService->sendApplicationSubmitted($application)
-            ));
+            );
 
             return $this->success(
                 new ApplicationResource($application->load('vacancy')),

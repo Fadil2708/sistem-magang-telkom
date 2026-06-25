@@ -38,34 +38,7 @@ use App\Livewire\Supervisor\ReportReview;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\WelcomeController;
-use App\Mail\ApplicationNotificationMail;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Mail;
-
-Route::get('/test-email', function () {
-    if (app()->environment('production') && request('token') !== config('app.seeder_token')) {
-        abort(403);
-    }
-
-    try {
-        Mail::to('fadilahkaka22@gmail.com')->send(
-            new ApplicationNotificationMail(
-                'emails.application.decision',
-                'Test Email — Debug',
-                [
-                    'intern_name' => 'Test User',
-                    'vacancy_title' => 'Software Developer Intern',
-                    'status' => 'accepted',
-                    'rejection_reason' => null,
-                ],
-            )
-        );
-        $mailer = config('mail.default');
-        return response("✅ Email terkirim via {$mailer}. Cek inbox fadilahkaka22@gmail.com");
-    } catch (\Throwable $e) {
-        return response("❌ Gagal: {$e->getMessage()}\nFile: {$e->getFile()}:{$e->getLine()}\nStack: {$e->getTraceAsString()}");
-    }
-});
 
 Route::get('/seed', function () {
     $lockFile = storage_path('app/seeded.lock');

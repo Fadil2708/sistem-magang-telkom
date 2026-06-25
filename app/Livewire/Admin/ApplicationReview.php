@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Admin;
 
-use App\Jobs\SendApplicationNotificationJob;
 use App\Models\Application;
 use App\Services\ApplicationService;
 use App\Services\NotificationService;
@@ -86,13 +85,13 @@ class ApplicationReview extends Component
         try {
             if ($this->reviewStatus === 'accepted') {
                 $service->accept($application);
-                SendApplicationNotificationJob::dispatch(
+                $this->notificationService->sendEmail(
                     $this->notificationService->sendApplicationDecision($application)
                 );
                 $this->dispatch('toast', message: 'Lamaran diterima. Record magang otomatis dibuat.', type: 'success');
             } elseif ($this->reviewStatus === 'rejected') {
                 $service->reject($application, $this->rejectionReason);
-                SendApplicationNotificationJob::dispatch(
+                $this->notificationService->sendEmail(
                     $this->notificationService->sendApplicationDecision($application)
                 );
                 $this->dispatch('toast', message: 'Lamaran ditolak.', type: 'success');
@@ -109,10 +108,10 @@ class ApplicationReview extends Component
                 }
 
                 match ($this->reviewStatus) {
-                    'interview_scheduled' => SendApplicationNotificationJob::dispatch(
+                    'interview_scheduled' => $this->notificationService->sendEmail(
                         $this->notificationService->sendInterviewScheduled($application)
                     ),
-                    default => SendApplicationNotificationJob::dispatch(
+                    default => $this->notificationService->sendEmail(
                         $this->notificationService->sendApplicationStatusUpdated($application)
                     ),
                 };

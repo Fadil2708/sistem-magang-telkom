@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApplicationResource;
-use App\Jobs\SendApplicationNotificationJob;
 use App\Models\Application;
 use App\Services\ApplicationService;
 use App\Services\NotificationService;
@@ -61,15 +60,15 @@ class ApplicationController extends Controller
             if ($request->status === 'accepted') {
                 $this->applicationService->accept($application);
 
-                dispatch(new SendApplicationNotificationJob(
+                $this->notificationService->sendEmail(
                     $this->notificationService->sendApplicationDecision($application->fresh())
-                ));
+                );
             } elseif ($request->status === 'rejected') {
                 $this->applicationService->reject($application, $request->rejection_reason);
 
-                dispatch(new SendApplicationNotificationJob(
+                $this->notificationService->sendEmail(
                     $this->notificationService->sendApplicationDecision($application->fresh())
-                ));
+                );
             } else {
                 $this->applicationService->updateStatus(
                     $application,
@@ -83,13 +82,13 @@ class ApplicationController extends Controller
                 }
 
                 if ($request->status === 'interview_scheduled') {
-                    dispatch(new SendApplicationNotificationJob(
+                    $this->notificationService->sendEmail(
                         $this->notificationService->sendInterviewScheduled($application->fresh())
-                    ));
+                    );
                 } else {
-                    dispatch(new SendApplicationNotificationJob(
+                    $this->notificationService->sendEmail(
                         $this->notificationService->sendApplicationStatusUpdated($application->fresh())
-                    ));
+                    );
                 }
             }
         } catch (\Exception $e) {
