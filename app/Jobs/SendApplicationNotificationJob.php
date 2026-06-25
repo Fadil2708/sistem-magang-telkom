@@ -50,10 +50,9 @@ class SendApplicationNotificationJob implements ShouldQueue, ShouldBeEncrypted
             return;
         }
 
-        Mail::send($view, $data, function ($message) use ($recipient, $subject) {
-            $message->to($recipient)
-                ->subject($subject);
-        });
+        Mail::to($recipient)->send(
+            new \App\Mail\ApplicationNotificationMail($view, $subject, $data)
+        );
     }
 
     public function failed(?\Throwable $exception): void
