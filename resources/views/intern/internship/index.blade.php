@@ -54,8 +54,8 @@
                     <td>Pembimbing</td>
                     <td>
                         <div style="display:flex;align-items:center;gap:8px">
-                            <x-avatar :name="$internship->supervisor->supervisorProfile->full_name ?? $internship->supervisor->name ?? '—'" :size="28" :font-size="11" />
-                            <span>{{ $internship->supervisor->supervisorProfile->full_name ?? $internship->supervisor->name ?? '—' }}</span>
+                            <x-avatar :name="$internship->supervisor->displayName()" :size="28" :font-size="11" />
+                            <span>{{ $internship->supervisor->displayName() }}</span>
                         </div>
                     </td>
                 </tr>
