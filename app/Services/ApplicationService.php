@@ -74,11 +74,13 @@ class ApplicationService
             $application->update(['status' => 'accepted']);
 
             return Internship::create([
-                'application_id' => $application->id,
-                'intern_id'      => $application->intern_id,
-                'vacancy_id'     => $application->vacancy_id,
-                'supervisor_id'  => null,
-                'status'         => 'active',
+                'application_id'    => $application->id,
+                'intern_id'         => $application->intern_id,
+                'vacancy_id'        => $application->vacancy_id,
+                'supervisor_id'     => null,
+                'actual_start_date' => $application->vacancy->start_date,
+                'actual_end_date'   => $application->vacancy->end_date,
+                'status'            => 'active',
             ]);
         });
     }
