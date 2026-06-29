@@ -5,10 +5,9 @@ namespace App\Http\Controllers\Intern;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Logbook\StoreLogbookRequest;
 use App\Http\Resources\LogbookResource;
-use App\Jobs\SendLogbookNotificationJob;
 use App\Models\Logbook;
+use App\Notifications\LogbookNotification;
 use App\Services\LogbookService;
-use App\Services\NotificationService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
@@ -17,8 +16,7 @@ class LogbookController extends Controller
     use ApiResponse;
 
     public function __construct(
-        private readonly LogbookService $logbookService,
-        private readonly NotificationService $notificationService
+        private readonly LogbookService $logbookService
     ) {}
 
     public function store(string $internshipId, StoreLogbookRequest $request): JsonResponse
@@ -70,9 +68,9 @@ class LogbookController extends Controller
             return $this->error($e->getMessage(), 422);
         }
 
-        dispatch(new SendLogbookNotificationJob(
-            $this->notificationService->sendNewLogbookToSupervisor($logbook)
-        ));
+        if ($supervisor = $logbook->internship?->supervisor) {
+            $supervisor->notify(new LogbookNotification($logbook, 'new_submission'));
+        }
 
         return $this->success(
             new LogbookResource($logbook),

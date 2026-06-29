@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Application\StoreApplicationRequest;
 use App\Http\Resources\ApplicationResource;
 use App\Models\Application;
+use App\Notifications\ApplicationNotification;
 use App\Services\ApplicationService;
-use App\Services\NotificationService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 
@@ -16,8 +16,7 @@ class ApplicationController extends Controller
     use ApiResponse;
 
     public function __construct(
-        private readonly ApplicationService $applicationService,
-        private readonly NotificationService $notificationService
+        private readonly ApplicationService $applicationService
     ) {}
 
     public function store(StoreApplicationRequest $request): JsonResponse
@@ -28,9 +27,7 @@ class ApplicationController extends Controller
                 $request->vacancy_id
             );
 
-            $this->notificationService->sendEmail(
-                $this->notificationService->sendApplicationSubmitted($application)
-            );
+            $request->user()->notify(new ApplicationNotification($application, 'submitted'));
 
             return $this->success(
                 new ApplicationResource($application->load('vacancy')),

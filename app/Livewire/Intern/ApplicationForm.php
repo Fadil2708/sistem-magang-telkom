@@ -3,8 +3,8 @@
 namespace App\Livewire\Intern;
 
 use App\Models\Vacancy;
+use App\Notifications\ApplicationNotification;
 use App\Services\ApplicationService;
-use App\Services\NotificationService;
 use Livewire\Component;
 
 class ApplicationForm extends Component
@@ -14,13 +14,6 @@ class ApplicationForm extends Component
     public bool $profileComplete = false;
     public ?string $applicationStatus = null;
     public ?string $errorMessage = null;
-
-    private NotificationService $notificationService;
-
-    public function boot(NotificationService $notificationService): void
-    {
-        $this->notificationService = $notificationService;
-    }
 
     public function mount(string $vacancyId): void
     {
@@ -51,9 +44,7 @@ class ApplicationForm extends Component
     {
         try {
             $application = $service->apply(auth()->user(), $this->vacancy->id);
-            $this->notificationService->sendEmail(
-                $this->notificationService->sendApplicationSubmitted($application)
-            );
+            auth()->user()->notify(new ApplicationNotification($application, 'submitted'));
             $this->hasApplied = true;
             $this->applicationStatus = 'submitted';
             $this->errorMessage = null;

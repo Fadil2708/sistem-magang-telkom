@@ -2,9 +2,8 @@
 
 namespace App\Livewire\Supervisor;
 
-use App\Jobs\SendReportNotificationJob;
 use App\Models\FinalReport;
-use App\Services\NotificationService;
+use App\Notifications\ReportNotification;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,13 +12,6 @@ class ReportReview extends Component
     use WithPagination;
 
     public string $filterStatus = 'pending';
-
-    private NotificationService $notificationService;
-
-    public function boot(NotificationService $notificationService): void
-    {
-        $this->notificationService = $notificationService;
-    }
 
     private function toast(string $message, string $type = 'success'): void
     {
@@ -52,9 +44,7 @@ class ReportReview extends Component
             'approved_at' => now(),
         ]);
 
-        SendReportNotificationJob::dispatch(
-            $this->notificationService->sendReportApproved($report)
-        );
+        $report->intern->notify(new ReportNotification($report, 'approved'));
 
         $this->toast('Laporan akhir berhasil disetujui.', 'success');
     }
@@ -79,9 +69,7 @@ class ReportReview extends Component
             'supervisor_approval' => 'rejected',
         ]);
 
-        SendReportNotificationJob::dispatch(
-            $this->notificationService->sendReportRejected($report)
-        );
+        $report->intern->notify(new ReportNotification($report, 'rejected'));
 
         $this->toast('Laporan akhir ditolak.', 'success');
     }

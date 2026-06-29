@@ -2,10 +2,9 @@
 
 namespace App\Livewire\Intern;
 
-use App\Jobs\SendLogbookNotificationJob;
 use App\Models\Internship;
 use App\Models\Logbook;
-use App\Services\NotificationService;
+use App\Notifications\LogbookNotification;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -16,13 +15,6 @@ class LogbookList extends Component
     public ?string $filterStatus = '';
     public ?Internship $internship = null;
     public bool $hasActiveInternship = false;
-
-    private NotificationService $notificationService;
-
-    public function boot(NotificationService $notificationService): void
-    {
-        $this->notificationService = $notificationService;
-    }
 
     public function mount(): void
     {
@@ -58,9 +50,9 @@ class LogbookList extends Component
 
         $logbook->update(['validation_status' => 'submitted']);
 
-        SendLogbookNotificationJob::dispatch(
-            $this->notificationService->sendNewLogbookToSupervisor($logbook)
-        );
+        if ($supervisor = $logbook->internship?->supervisor) {
+            $supervisor->notify(new LogbookNotification($logbook, 'new_submission'));
+        }
 
         $this->resetPage();
         session()->flash('success', 'Logbook berhasil dikirim ke supervisor.');

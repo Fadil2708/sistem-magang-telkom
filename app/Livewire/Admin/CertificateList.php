@@ -4,8 +4,8 @@ namespace App\Livewire\Admin;
 
 use App\Models\Certificate;
 use App\Models\Internship;
+use App\Notifications\CertificateNotification;
 use App\Services\CertificateService;
-use App\Services\NotificationService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -25,7 +25,7 @@ class CertificateList extends Component
         $this->confirmingIssueId = $internshipId;
     }
 
-    public function issue(CertificateService $service, NotificationService $notificationService): void
+    public function issue(CertificateService $service): void
     {
         abort_unless(auth()->user()->isAdmin(), 403);
         $internship = Internship::with('evaluation')
@@ -46,7 +46,7 @@ class CertificateList extends Component
 
         $certificate = $service->issue($internship, auth()->id());
 
-        dispatch(new \App\Jobs\SendCertificateNotificationJob($certificate));
+        $certificate->intern->notify(new CertificateNotification($certificate));
 
         dispatch(new \App\Jobs\GenerateCertificatePdfJob($certificate));
 

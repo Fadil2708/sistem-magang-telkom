@@ -161,6 +161,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/testimonials/create', TestimonialForm::class)->name('testimonials.create');
     });
 
+    // ─── Notifications ──────────────────────────────────
+    Route::get('/notifications', function () {
+        $notifications = auth()->user()
+            ->notifications()
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        return view('notifications.index', compact('notifications'));
+    })->name('notifications');
+
+    Route::post('/notifications/read-all', function () {
+        auth()->user()->unreadNotifications->markAsRead();
+        return redirect()->back();
+    })->name('notifications.read-all');
+
+    Route::get('/notifications/{id}/read', function (string $id) {
+        $notif = auth()->user()->notifications()->findOrFail($id);
+        $notif->markAsRead();
+        $redirect = request('redirect', route('notifications'));
+        return redirect($redirect);
+    })->name('notifications.read');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

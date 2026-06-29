@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApplicationResource;
 use App\Models\Application;
+use App\Notifications\ApplicationNotification;
 use App\Services\ApplicationService;
-use App\Services\NotificationService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,8 +18,7 @@ class ApplicationController extends Controller
     use ApiResponse;
 
     public function __construct(
-        private readonly ApplicationService $applicationService,
-        private readonly NotificationService $notificationService
+        private readonly ApplicationService $applicationService
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -60,15 +59,11 @@ class ApplicationController extends Controller
             if ($request->status === 'accepted') {
                 $this->applicationService->accept($application);
 
-                $this->notificationService->sendEmail(
-                    $this->notificationService->sendApplicationDecision($application->fresh())
-                );
+                $application->refresh()->intern->notify(new ApplicationNotification($application, 'decision'));
             } elseif ($request->status === 'rejected') {
                 $this->applicationService->reject($application, $request->rejection_reason);
 
-                $this->notificationService->sendEmail(
-                    $this->notificationService->sendApplicationDecision($application->fresh())
-                );
+                $application->refresh()->intern->notify(new ApplicationNotification($application, 'decision'));
             } else {
                 $this->applicationService->updateStatus(
                     $application,
@@ -81,14 +76,12 @@ class ApplicationController extends Controller
                     $application->update(['admin_notes' => $request->admin_notes]);
                 }
 
+                $application->refresh();
+
                 if ($request->status === 'interview_scheduled') {
-                    $this->notificationService->sendEmail(
-                        $this->notificationService->sendInterviewScheduled($application->fresh())
-                    );
+                    $application->intern->notify(new ApplicationNotification($application, 'interview_scheduled'));
                 } else {
-                    $this->notificationService->sendEmail(
-                        $this->notificationService->sendApplicationStatusUpdated($application->fresh())
-                    );
+                    $application->intern->notify(new ApplicationNotification($application, 'status_updated'));
                 }
             }
         } catch (\Exception $e) {

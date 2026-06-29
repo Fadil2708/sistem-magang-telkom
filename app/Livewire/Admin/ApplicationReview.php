@@ -3,8 +3,8 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Application;
+use App\Notifications\ApplicationNotification;
 use App\Services\ApplicationService;
-use App\Services\NotificationService;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -16,13 +16,6 @@ class ApplicationReview extends Component
     public $filterStatus = '';
     public $filterVacancy = '';
     public $selectedApplicationId = null;
-
-    private NotificationService $notificationService;
-
-    public function boot(NotificationService $notificationService): void
-    {
-        $this->notificationService = $notificationService;
-    }
 
     // Modal review
     public $showReviewModal = false;
@@ -85,15 +78,11 @@ class ApplicationReview extends Component
         try {
             if ($this->reviewStatus === 'accepted') {
                 $service->accept($application);
-                $this->notificationService->sendEmail(
-                    $this->notificationService->sendApplicationDecision($application)
-                );
+                $application->intern->notify(new ApplicationNotification($application, 'decision'));
                 $this->dispatch('toast', message: 'Lamaran diterima. Record magang otomatis dibuat.', type: 'success');
             } elseif ($this->reviewStatus === 'rejected') {
                 $service->reject($application, $this->rejectionReason);
-                $this->notificationService->sendEmail(
-                    $this->notificationService->sendApplicationDecision($application)
-                );
+                $application->intern->notify(new ApplicationNotification($application, 'decision'));
                 $this->dispatch('toast', message: 'Lamaran ditolak.', type: 'success');
             } else {
                 $service->updateStatus(
@@ -108,11 +97,11 @@ class ApplicationReview extends Component
                 }
 
                 match ($this->reviewStatus) {
-                    'interview_scheduled' => $this->notificationService->sendEmail(
-                        $this->notificationService->sendInterviewScheduled($application)
+                    'interview_scheduled' => $application->intern->notify(
+                        new ApplicationNotification($application, 'interview_scheduled')
                     ),
-                    default => $this->notificationService->sendEmail(
-                        $this->notificationService->sendApplicationStatusUpdated($application)
+                    default => $application->intern->notify(
+                        new ApplicationNotification($application, 'status_updated')
                     ),
                 };
 

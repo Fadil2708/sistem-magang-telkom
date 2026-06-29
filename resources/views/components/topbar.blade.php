@@ -18,6 +18,7 @@
     </div>
 
     <div class="topbar-right">
+        <livewire:notification-bell key="notif-bell-{{ auth()->id() }}" />
         <div @click.outside="dropOpen = false" class="topbar-dropdown-wrap">
             <button @click="dropOpen = !dropOpen"
                     class="topbar-user-btn"

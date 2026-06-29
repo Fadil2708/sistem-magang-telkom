@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CertificateResource;
 use App\Jobs\GenerateCertificatePdfJob;
-use App\Jobs\SendCertificateNotificationJob;
 use App\Models\Certificate;
 use App\Models\Internship;
+use App\Notifications\CertificateNotification;
 use App\Services\CertificateService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -56,7 +56,7 @@ class CertificateController extends Controller
             return $this->error($e->getMessage(), 422);
         }
 
-        dispatch(new SendCertificateNotificationJob($certificate));
+        $certificate->intern->notify(new CertificateNotification($certificate));
 
         dispatch(new GenerateCertificatePdfJob($certificate));
 

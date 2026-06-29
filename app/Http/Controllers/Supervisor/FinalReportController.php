@@ -4,9 +4,8 @@ namespace App\Http\Controllers\Supervisor;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FinalReportResource;
-use App\Jobs\SendReportNotificationJob;
 use App\Models\FinalReport;
-use App\Services\NotificationService;
+use App\Notifications\ReportNotification;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,10 +13,6 @@ use Illuminate\Http\Request;
 class FinalReportController extends Controller
 {
     use ApiResponse;
-
-    public function __construct(
-        private readonly NotificationService $notificationService
-    ) {}
 
     public function review(Request $request, string $id): JsonResponse
     {
@@ -42,11 +37,7 @@ class FinalReportController extends Controller
 
         $report->update($updateData);
 
-        if ($request->action === 'rejected') {
-            dispatch(new SendReportNotificationJob(
-                $this->notificationService->sendReportRejected($report)
-            ));
-        }
+        $report->intern->notify(new ReportNotification($report, $request->action));
 
         $message = $request->action === 'approved'
             ? 'Laporan akhir berhasil disetujui.'

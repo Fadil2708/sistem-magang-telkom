@@ -2,10 +2,9 @@
 
 namespace App\Livewire\Supervisor;
 
-use App\Jobs\SendLogbookNotificationJob;
 use App\Models\Internship;
 use App\Models\Logbook;
-use App\Services\NotificationService;
+use App\Notifications\LogbookNotification;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -20,16 +19,9 @@ class LogbookReview extends Component
     public array $selectedLogbooks = [];
     public ?string $internId = null;
 
-    private NotificationService $notificationService;
-
     public function mount(): void
     {
         $this->internId = request()->query('intern_id');
-    }
-
-    public function boot(NotificationService $notificationService): void
-    {
-        $this->notificationService = $notificationService;
     }
 
     private function toast(string $message, string $type = 'success'): void
@@ -75,9 +67,7 @@ class LogbookReview extends Component
             'reviewed_at' => now(),
         ]);
 
-        SendLogbookNotificationJob::dispatch(
-            $this->notificationService->sendLogbookApproved($logbook)
-        );
+        $logbook->intern->notify(new LogbookNotification($logbook, 'approved'));
 
         $this->toast('Logbook berhasil disetujui.', 'success');
     }
@@ -120,9 +110,7 @@ class LogbookReview extends Component
                 'reviewed_at' => now(),
             ]);
 
-            SendLogbookNotificationJob::dispatch(
-                $this->notificationService->sendLogbookApproved($logbook)
-            );
+            $logbook->intern->notify(new LogbookNotification($logbook, 'approved'));
 
             $approved++;
         }
@@ -169,9 +157,7 @@ class LogbookReview extends Component
             'reviewed_at' => now(),
         ]);
 
-        SendLogbookNotificationJob::dispatch(
-            $this->notificationService->sendLogbookRevisionRequested($logbook)
-        );
+        $logbook->intern->notify(new LogbookNotification($logbook, 'revision_requested'));
 
         $this->showRevisionModal = false;
         $this->toast('Revisi logbook telah diminta.', 'success');
