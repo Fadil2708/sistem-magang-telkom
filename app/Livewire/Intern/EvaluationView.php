@@ -14,7 +14,7 @@ class EvaluationView extends Component
     public function mount(): void
     {
         $this->internship = Internship::where('intern_id', auth()->id())
-            ->whereIn('status', ['completed', 'terminated'])
+            ->whereIn('status', ['active', 'completed', 'terminated'])
             ->with(['evaluation', 'vacancy', 'supervisor.supervisorProfile'])
             ->latest()
             ->first();
