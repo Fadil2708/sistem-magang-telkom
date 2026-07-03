@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use App\Traits\HasUuid;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Vacancy extends Model
 {
-    use HasFactory, HasUuid;
+    use HasFactory, HasUuid, Auditable;
 
     protected $fillable = [
         'created_by', 'title', 'division', 'description', 'qualifications',
@@ -34,6 +36,16 @@ class Vacancy extends Model
     }
 
     public function isOpen(): bool { return $this->status === 'open'; }
+
+    public function scopeOpen(Builder $query): Builder
+    {
+        return $query->where('status', 'open');
+    }
+
+    public function scopeClosed(Builder $query): Builder
+    {
+        return $query->where('status', 'closed');
+    }
 
     public static function autoCloseExpired(): int
     {

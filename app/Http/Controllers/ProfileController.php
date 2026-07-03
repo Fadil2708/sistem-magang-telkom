@@ -56,7 +56,7 @@ class ProfileController extends Controller
         $user = $request->user();
 
         if ($user->isIntern() && $user->internProfile?->photo_url) {
-            $disk = Storage::disk('private');
+            $disk = Storage::disk(config('filesystems.private_disk'));
             $path = $user->internProfile->photo_url;
 
             if ($disk->exists($path)) {

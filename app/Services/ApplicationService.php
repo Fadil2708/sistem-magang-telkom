@@ -13,16 +13,13 @@ use Illuminate\Support\Str;
 
 class ApplicationService
 {
-    private const TRANSITIONS = [
+    public const TRANSITIONS = [
         'submitted'           => ['under_review'],
         'under_review'        => ['interview_scheduled', 'rejected'],
         'interview_scheduled' => ['accepted', 'rejected'],
         'accepted'            => [],
         'rejected'            => ['under_review'],
     ];
-
-    private const ACTIVE_STATUSES = ['submitted', 'under_review', 'interview_scheduled'];
-    private const MAX_ACTIVE_APPLICATIONS = 2;
 
     public function apply(User $intern, string $vacancyId): Application
     {
@@ -31,17 +28,18 @@ class ApplicationService
         $this->ensureProfileComplete($intern);
         $this->ensureVacancyOpen($vacancy);
         $this->ensureNotDuplicate($intern, $vacancy);
-        $this->ensureQuotaAvailable($vacancy);
         $this->ensureActiveApplicationLimit($intern);
 
-        $application = Application::create([
-            'intern_id'  => $intern->id,
-            'vacancy_id' => $vacancy->id,
-            'status'     => 'submitted',
-            'applied_at' => now(),
-        ]);
+        return DB::transaction(function () use ($intern, $vacancy) {
+            $this->ensureQuotaAvailable($vacancy, lock: true);
 
-        return $application;
+            return Application::create([
+                'intern_id'  => $intern->id,
+                'vacancy_id' => $vacancy->id,
+                'status'     => 'submitted',
+                'applied_at' => now(),
+            ]);
+        });
     }
 
     public function updateStatus(Application $application, string $newStatus, ?string $reason = null, ?string $interviewDate = null): void
@@ -68,9 +66,9 @@ class ApplicationService
     {
         $this->validateTransition($application, 'accepted');
 
-        $this->ensureQuotaAvailable($application->vacancy);
-
         return DB::transaction(function () use ($application) {
+            $this->ensureQuotaAvailable($application->vacancy, lock: true);
+
             $application->update(['status' => 'accepted']);
 
             return Internship::create([
@@ -87,16 +85,7 @@ class ApplicationService
 
     public function reject(Application $application, string $reason): void
     {
-        $this->validateTransition($application, 'rejected');
-
-        if (empty($reason)) {
-            throw new \Exception('Alasan penolakan wajib diisi.');
-        }
-
-        $application->update([
-            'status'           => 'rejected',
-            'rejection_reason' => $reason,
-        ]);
+        $this->updateStatus($application, 'rejected', $reason);
     }
 
     public function cancel(Application $application): void
@@ -123,7 +112,7 @@ class ApplicationService
     private function ensureProfileComplete(User $intern): void
     {
         $profile = $intern->internProfile;
-        $required = ['full_name', 'institution_name', 'major', 'student_id', 'cv_url'];
+        $required = \App\Models\InternProfile::requiredFields();
 
         foreach ($required as $field) {
             if (!$profile || empty($profile->{$field})) {
@@ -150,11 +139,16 @@ class ApplicationService
         }
     }
 
-    private function ensureQuotaAvailable(Vacancy $vacancy): void
+    private function ensureQuotaAvailable(Vacancy $vacancy, bool $lock = false): void
     {
-        $acceptedCount = Application::where('vacancy_id', $vacancy->id)
-            ->where('status', 'accepted')
-            ->count();
+        $query = Application::where('vacancy_id', $vacancy->id)
+            ->where('status', 'accepted');
+
+        if ($lock) {
+            $query->lockForUpdate();
+        }
+
+        $acceptedCount = $query->count();
 
         if ($acceptedCount >= $vacancy->quota) {
             throw new QuotaFullException();
@@ -164,10 +158,10 @@ class ApplicationService
     private function ensureActiveApplicationLimit(User $intern): void
     {
         $activeCount = Application::where('intern_id', $intern->id)
-            ->whereIn('status', self::ACTIVE_STATUSES)
+            ->whereIn('status', config('app.application.active_statuses'))
             ->count();
 
-        if ($activeCount >= self::MAX_ACTIVE_APPLICATIONS) {
+        if ($activeCount >= config('app.application.max_active')) {
             throw new \Exception('Anda hanya dapat memiliki maksimal 2 lamaran aktif. Silakan tunggu hingga salah satu lamaran selesai diproses sebelum melamar lagi.');
         }
     }

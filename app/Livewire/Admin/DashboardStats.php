@@ -9,11 +9,11 @@ use Livewire\Component;
 
 class DashboardStats extends Component
 {
-    public $totalInternsActive = 0;
-    public $totalVacanciesOpen = 0;
-    public $totalApplicationsPending = 0;
-    public $totalLogbooksPending = 0;
-    public $certificatesThisMonth = 0;
+    public int $totalInternsActive = 0;
+    public int $totalVacanciesOpen = 0;
+    public int $totalApplicationsPending = 0;
+    public int $totalLogbooksPending = 0;
+    public int $certificatesThisMonth = 0;
 
     public function mount(): void
     {

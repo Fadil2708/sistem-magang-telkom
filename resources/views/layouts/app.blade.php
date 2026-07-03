@@ -33,7 +33,7 @@
     @include('components.sidebar')
 
     <div class="main-content">
-        @if(auth()->check() && auth()->user()->isIntern() && !auth()->user()->internProfile?->isComplete())
+        @if($showProfileStrip)
             @include('components.profile-strip')
         @endif
 

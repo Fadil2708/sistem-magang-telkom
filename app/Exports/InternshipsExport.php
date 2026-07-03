@@ -29,7 +29,7 @@ class InternshipsExport implements FromQuery, WithHeadings, WithMapping
     public function map($internship): array
     {
         return [
-            $internship->intern?->internProfile?->full_name ?? $internship->intern?->email,
+            $internship->intern?->displayName(),
             $internship->supervisor?->supervisorProfile?->full_name ?? '-',
             $internship->vacancy?->title ?? '-',
             $internship->actual_start_date?->format('Y-m-d') ?? '-',

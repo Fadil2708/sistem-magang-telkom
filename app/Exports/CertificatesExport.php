@@ -31,7 +31,7 @@ class CertificatesExport implements FromQuery, WithHeadings, WithMapping
     {
         return [
             $certificate->certificate_number,
-            $certificate->intern?->internProfile?->full_name ?? $certificate->intern?->email,
+            $certificate->intern?->displayName(),
             $certificate->internship?->vacancy?->title ?? '-',
             $certificate->final_score,
             $certificate->grade,

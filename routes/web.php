@@ -37,26 +37,8 @@ use App\Livewire\Supervisor\MyInterns;
 use App\Livewire\Supervisor\ReportReview;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\WelcomeController;
-use Illuminate\Support\Facades\Artisan;
-
-Route::get('/seed', function () {
-    $lockFile = storage_path('app/seeded.lock');
-    if (file_exists($lockFile)) {
-        abort(403, 'Seeding sudah pernah dilakukan.');
-    }
-
-    $token = request('token');
-    if (!$token || $token !== config('app.seeder_token')) {
-        abort(403, 'Token tidak valid.');
-    }
-
-    Artisan::call('db:seed', ['--force' => true]);
-
-    file_put_contents($lockFile, now());
-
-    return response('✅ Seeder berhasil & otomatis dinonaktifkan.');
-});
 
 Route::get('/', WelcomeController::class);
 
@@ -66,9 +48,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     Route::prefix('admin')->middleware('role:admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
         Route::get('/users', UserList::class)->name('users');
         Route::get('/users/create', UserForm::class)->name('users.create');
@@ -101,19 +81,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('supervisor')->middleware('role:supervisor')->name('supervisor.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('supervisor.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [\App\Http\Controllers\Supervisor\DashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/profile', SupervisorProfileForm::class)->name('profile');
         Route::get('/interns', MyInterns::class)->name('interns.index');
-        Route::get('/interns/{internship}', function (string $id) {
-            $internship = \App\Models\Internship::with(['intern.internProfile', 'vacancy'])->findOrFail($id);
-            if ($internship->supervisor_id === null || $internship->supervisor_id !== auth()->id()) {
-                abort(403);
-            }
-            return view('supervisor.interns.show', compact('internship'));
-        })->name('interns.show');
+        Route::get('/interns/{internship}', [\App\Http\Controllers\Supervisor\InternController::class, 'show'])->name('interns.show');
         Route::get('/logbooks', LogbookReview::class)->name('logbooks');
         Route::get('/reports', ReportReview::class)->name('reports');
         Route::get('/evaluations', EvaluationForm::class)->name('evaluations.create');
@@ -121,36 +93,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::prefix('intern')->middleware('role:intern')->name('intern.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('intern.dashboard');
-        })->name('dashboard');
+        Route::view('/dashboard', 'intern.dashboard')->name('dashboard');
 
         Route::get('/profile', ProfileForm::class)->name('profile');
         Route::get('/vacancies', InternVacancyList::class)->name('vacancies');
         Route::get('/applications/create/{vacancyId}', ApplicationForm::class)->name('applications.create');
         Route::get('/applications', MyApplications::class)->name('applications');
-        Route::get('/applications/{application}', function (string $id) {
-            $application = \App\Models\Application::with([
-                'vacancy', 'intern.internProfile', 'internship'
-            ])->findOrFail($id);
-
-            if ($application->intern_id !== auth()->id()) {
-                abort(403);
-            }
-
-            return view('intern.applications.show', compact('application'));
-        })->name('applications.show');
-        Route::get('/internship', function () {
-            $internship = \App\Models\Internship::with([
-                'vacancy', 'supervisor.supervisorProfile'
-            ])->where('intern_id', auth()->id())->first();
-
-            if (!$internship) {
-                return view('intern.internship.index');
-            }
-
-            return view('intern.internship.index', compact('internship'));
-        })->name('internship');
+        Route::get('/applications/{application}', [\App\Http\Controllers\Intern\ApplicationController::class, 'show'])->name('applications.show');
+        Route::get('/internship', [\App\Http\Controllers\Intern\InternshipController::class, 'index'])->name('internship');
         Route::get('/logbooks', LogbookList::class)->name('logbooks');
         Route::get('/logbooks/create', LogbookForm::class)->name('logbooks.create');
         Route::get('/logbooks/{id}/edit', LogbookForm::class)->name('logbooks.edit');
@@ -162,25 +112,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // ─── Notifications ──────────────────────────────────
-    Route::get('/notifications', function () {
-        $notifications = auth()->user()
-            ->notifications()
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
-        return view('notifications.index', compact('notifications'));
-    })->name('notifications');
-
-    Route::post('/notifications/read-all', function () {
-        auth()->user()->unreadNotifications->markAsRead();
-        return redirect()->back();
-    })->name('notifications.read-all');
-
-    Route::get('/notifications/{id}/read', function (string $id) {
-        $notif = auth()->user()->notifications()->findOrFail($id);
-        $notif->markAsRead();
-        $redirect = request('redirect', route('notifications'));
-        return redirect($redirect);
-    })->name('notifications.read');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+    Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::get('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

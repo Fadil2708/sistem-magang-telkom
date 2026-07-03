@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Supervisor;
 
-use App\Models\Internship;
 use App\Models\Logbook;
 use App\Notifications\LogbookNotification;
+use App\Services\LogbookService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -19,6 +19,13 @@ class LogbookReview extends Component
     public array $selectedLogbooks = [];
     public ?string $internId = null;
 
+    private LogbookService $logbookService;
+
+    public function boot(LogbookService $logbookService): void
+    {
+        $this->logbookService = $logbookService;
+    }
+
     public function mount(): void
     {
         $this->internId = request()->query('intern_id');
@@ -29,15 +36,16 @@ class LogbookReview extends Component
         $this->dispatch('toast', message: $message, type: $type);
     }
 
+    private function submittedIdsQuery()
+    {
+        return Logbook::scopeForSupervisor(auth()->id())
+            ->when($this->internId, fn($q) => $q->where('intern_id', $this->internId))
+            ->where('validation_status', 'submitted');
+    }
+
     private function allSubmittedIds(): array
     {
-        return Logbook::whereHas('internship', fn($q) =>
-            $q->where('supervisor_id', auth()->id())
-                ->when($this->internId, fn($q) => $q->where('intern_id', $this->internId))
-        )
-            ->where('validation_status', 'submitted')
-            ->pluck('id')
-            ->toArray();
+        return $this->submittedIdsQuery()->pluck('id')->toArray();
     }
 
     public function updatingFilterStatus(): void
@@ -49,27 +57,13 @@ class LogbookReview extends Component
     public function approve(string $id): void
     {
         try {
-            $logbook = Logbook::whereHas('internship', fn($q) =>
-                $q->where('supervisor_id', auth()->id())
-            )->with(['intern.internProfile'])->findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            $this->toast('Logbook tidak ditemukan.', 'error');
-            return;
+            $logbook = Logbook::findOrFail($id);
+            $this->logbookService->review($logbook, auth()->user(), 'approved');
+            $logbook->intern->notify(new LogbookNotification($logbook, 'approved'));
+            $this->toast('Logbook berhasil disetujui.', 'success');
+        } catch (\Exception $e) {
+            $this->toast($e->getMessage(), 'error');
         }
-
-        if ($logbook->validation_status !== 'submitted') {
-            $this->toast('Hanya logbook dengan status submitted yang bisa disetujui.', 'error');
-            return;
-        }
-
-        $logbook->update([
-            'validation_status' => 'approved',
-            'reviewed_at' => now(),
-        ]);
-
-        $logbook->intern->notify(new LogbookNotification($logbook, 'approved'));
-
-        $this->toast('Logbook berhasil disetujui.', 'success');
     }
 
     public function toggleSelectAll(): void
@@ -89,36 +83,24 @@ class LogbookReview extends Component
         }
 
         $approved = 0;
-        $skipped = 0;
+        $errors = 0;
 
-        $logbooks = Logbook::whereIn('id', $this->selectedLogbooks)
-            ->whereHas('internship', fn($q) =>
-                $q->where('supervisor_id', auth()->id())
-            )->with(['intern.internProfile'])->get();
-
-        $foundIds = $logbooks->pluck('id')->toArray();
-        $skipped += count($this->selectedLogbooks) - $logbooks->count();
+        $logbooks = Logbook::whereIn('id', $this->selectedLogbooks)->get();
 
         foreach ($logbooks as $logbook) {
-            if ($logbook->validation_status !== 'submitted') {
-                $skipped++;
-                continue;
+            try {
+                $this->logbookService->review($logbook, auth()->user(), 'approved');
+                $logbook->intern->notify(new LogbookNotification($logbook, 'approved'));
+                $approved++;
+            } catch (\Exception $e) {
+                $errors++;
             }
-
-            $logbook->update([
-                'validation_status' => 'approved',
-                'reviewed_at' => now(),
-            ]);
-
-            $logbook->intern->notify(new LogbookNotification($logbook, 'approved'));
-
-            $approved++;
         }
 
         $this->selectedLogbooks = [];
 
         if ($approved > 0) {
-            $this->toast("{$approved} logbook berhasil disetujui.", 'success');
+            $this->toast("{$approved} logbook berhasil disetujui." . ($errors > 0 ? " {$errors} gagal." : ''), 'success');
         } else {
             $this->toast('Tidak ada logbook yang bisa disetujui.', 'error');
         }
@@ -136,52 +118,29 @@ class LogbookReview extends Component
         $this->validate(['revisionNotes' => 'required|string|max:500']);
 
         try {
-            $logbook = Logbook::whereHas('internship', fn($q) =>
-                $q->where('supervisor_id', auth()->id())
-            )->with(['intern.internProfile'])->findOrFail($this->logbookId);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            $this->toast('Logbook tidak ditemukan.', 'error');
+            $logbook = Logbook::findOrFail($this->logbookId);
+            $this->logbookService->review($logbook, auth()->user(), 'revision_requested', $this->revisionNotes);
+            $logbook->intern->notify(new LogbookNotification($logbook, 'revision_requested'));
             $this->showRevisionModal = false;
-            return;
-        }
-
-        if ($logbook->validation_status !== 'submitted') {
-            $this->toast('Hanya logbook dengan status submitted yang bisa direview.', 'error');
+            $this->toast('Revisi logbook telah diminta.', 'success');
+        } catch (\Exception $e) {
+            $this->toast($e->getMessage(), 'error');
             $this->showRevisionModal = false;
-            return;
         }
-
-        $logbook->update([
-            'validation_status' => 'revision_requested',
-            'supervisor_notes' => $this->revisionNotes,
-            'reviewed_at' => now(),
-        ]);
-
-        $logbook->intern->notify(new LogbookNotification($logbook, 'revision_requested'));
-
-        $this->showRevisionModal = false;
-        $this->toast('Revisi logbook telah diminta.', 'success');
     }
 
     public function render()
     {
         $supervisorId = auth()->id();
 
-        $logbooks = Logbook::whereHas('internship', fn($q) =>
-            $q->where('supervisor_id', $supervisorId)
-                ->when($this->internId, fn($q) => $q->where('intern_id', $this->internId))
-        )
+        $logbooks = Logbook::scopeForSupervisor($supervisorId)
             ->with(['intern.internProfile', 'internship.vacancy'])
+            ->when($this->internId, fn($q) => $q->where('intern_id', $this->internId))
             ->when($this->filterStatus, fn($q) => $q->where('validation_status', $this->filterStatus))
             ->orderBy('activity_date', 'desc')
             ->paginate(10);
 
-        $totalSubmitted = Logbook::whereHas('internship', fn($q) =>
-            $q->where('supervisor_id', $supervisorId)
-                ->when($this->internId, fn($q) => $q->where('intern_id', $this->internId))
-        )
-            ->where('validation_status', 'submitted')
-            ->count();
+        $totalSubmitted = $this->submittedIdsQuery()->count();
 
         return view('livewire.supervisor.logbook-review', compact('logbooks', 'totalSubmitted'));
     }

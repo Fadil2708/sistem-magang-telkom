@@ -33,7 +33,7 @@ class EvaluationsExport implements FromQuery, WithHeadings, WithMapping
     public function map($evaluation): array
     {
         return [
-            $evaluation->internship?->intern?->internProfile?->full_name ?? '-',
+            $evaluation->internship?->intern?->displayName() ?? '-',
             $evaluation->supervisor?->supervisorProfile?->full_name ?? '-',
             $evaluation->internship?->vacancy?->title ?? '-',
             $evaluation->soft_skill_score,

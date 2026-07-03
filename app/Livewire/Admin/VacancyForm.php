@@ -8,15 +8,15 @@ use Livewire\Component;
 class VacancyForm extends Component
 {
     public ?Vacancy $vacancy = null;
-    public $title = '';
-    public $division = '';
-    public $description = '';
-    public $qualifications = '';
-    public $quota = 1;
-    public $start_date = '';
-    public $end_date = '';
-    public $application_deadline = '';
-    public $status = 'draft';
+    public string $title = '';
+    public string $division = '';
+    public string $description = '';
+    public string $qualifications = '';
+    public int $quota = 1;
+    public string $start_date = '';
+    public string $end_date = '';
+    public string $application_deadline = '';
+    public string $status = 'draft';
 
     public bool $isEditing = false;
 

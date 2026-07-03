@@ -4,6 +4,7 @@ namespace App\Livewire\Intern;
 
 use App\Models\Internship;
 use App\Models\Logbook;
+use App\Services\LogbookService;
 use Livewire\Component;
 
 class LogbookForm extends Component
@@ -14,6 +15,13 @@ class LogbookForm extends Component
     public string $output = '';
     public bool $hasActiveInternship = false;
     public string $validationStatus = 'draft';
+
+    private LogbookService $logbookService;
+
+    public function boot(LogbookService $logbookService): void
+    {
+        $this->logbookService = $logbookService;
+    }
 
     protected function rules(): array
     {
@@ -61,36 +69,27 @@ class LogbookForm extends Component
         }
 
         $data = [
-            'internship_id' => $internship->id,
-            'intern_id' => auth()->id(),
             'activity_date' => $this->activity_date,
             'activities' => $this->activities,
             'output' => $this->output,
+            'validation_status' => 'draft',
         ];
 
-        $exists = Logbook::where('internship_id', $internship->id)
-            ->where('activity_date', $this->activity_date)
-            ->when($this->logbookId, fn($q) => $q->where('id', '!=', $this->logbookId))
-            ->exists();
+        try {
+            if ($this->logbookId) {
+                $logbook = Logbook::where('intern_id', auth()->id())
+                    ->whereIn('validation_status', ['draft', 'revision_requested'])
+                    ->findOrFail($this->logbookId);
 
-        if ($exists) {
-            $this->addError('activity_date', 'Anda sudah mengisi logbook untuk tanggal ini.');
+                $this->logbookService->update($logbook, auth()->user(), $data);
+                session()->flash('success', 'Logbook berhasil diperbarui.');
+            } else {
+                $this->logbookService->create($internship->id, auth()->user(), $data);
+                session()->flash('success', 'Logbook berhasil dibuat.');
+            }
+        } catch (\Exception $e) {
+            $this->addError('activity_date', $e->getMessage());
             return;
-        }
-
-        if ($this->logbookId) {
-            $logbook = Logbook::where('intern_id', auth()->id())
-                ->whereIn('validation_status', ['draft', 'revision_requested'])
-                ->findOrFail($this->logbookId);
-
-            $logbook->update($data);
-            session()->flash('success', 'Logbook berhasil diperbarui.');
-        } else {
-            Logbook::create([
-                ...$data,
-                'validation_status' => 'draft',
-            ]);
-            session()->flash('success', 'Logbook berhasil dibuat.');
         }
 
         $this->redirect(route('intern.logbooks'), navigate: true);

@@ -30,7 +30,7 @@ class LogbooksExport implements FromQuery, WithHeadings, WithMapping
     public function map($logbook): array
     {
         return [
-            $logbook->intern?->internProfile?->full_name ?? $logbook->intern?->email,
+            $logbook->intern?->displayName(),
             $logbook->internship?->vacancy?->title ?? '-',
             $logbook->activity_date?->format('Y-m-d') ?? '-',
             $logbook->activities,

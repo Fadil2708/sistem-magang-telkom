@@ -28,7 +28,7 @@ class ApplicationsExport implements FromQuery, WithHeadings, WithMapping
     public function map($application): array
     {
         return [
-            $application->intern?->internProfile?->full_name ?? $application->intern?->email,
+            $application->intern?->displayName(),
             $application->vacancy?->title ?? '-',
             $application->applied_at?->format('Y-m-d') ?? '-',
             $application->status,

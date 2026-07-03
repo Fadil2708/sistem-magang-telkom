@@ -40,11 +40,12 @@ class Evaluation extends Model
 
     public function calculateFinalScore(): void
     {
-        $this->final_score = (
+        $this->final_score = round(
             ($this->soft_skill_score  * 0.25) +
             ($this->hard_skill_score  * 0.35) +
             ($this->attendance_score  * 0.20) +
-            ($this->attitude_score    * 0.20)
+            ($this->attitude_score    * 0.20),
+            2
         );
 
         $this->grade = match(true) {

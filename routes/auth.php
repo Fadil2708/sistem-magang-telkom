@@ -16,7 +16,8 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [RegisteredUserController::class, 'store'])
+        ->middleware('throttle:5,30');
 
     Route::get('register/supervisor', [RegisteredSupervisorController::class, 'create'])
         ->name('register.supervisor');
@@ -27,7 +28,8 @@ Route::middleware('guest')->group(function () {
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('throttle:5,60');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
@@ -41,15 +43,11 @@ Route::middleware('guest')->group(function () {
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
 
-    Route::get('reset-success', function () {
-        return view('auth.reset-success');
-    })->name('password.reset.success');
+    Route::view('reset-success', 'auth.reset-success')->name('password.reset.success');
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('verification-success', function () {
-        return view('auth.verification-success');
-    })->name('verification.success');
+    Route::view('verification-success', 'auth.verification-success')->name('verification.success');
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 
@@ -61,9 +59,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('throttle:6,1')
         ->name('verification.send');
 
-    Route::get('email/verification-notification', function () {
-        return redirect()->route('verification.notice');
-    });
+    Route::redirect('email/verification-notification', '/verify-email');
 
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
         ->name('password.confirm');

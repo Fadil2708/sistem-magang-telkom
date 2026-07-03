@@ -21,17 +21,11 @@ class ContentSecurityPolicy
 
         $response = $next($request);
 
-        $response->headers->set('Content-Security-Policy',
-            "default-src 'self';" .
-            "script-src 'self' 'nonce-{$nonce}' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com;" .
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net;" .
-            "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net;" .
-            "img-src 'self' data:;" .
-            "connect-src 'self' https://cdn.jsdelivr.net https://unpkg.com;" .
-            "form-action 'self';" .
-            "base-uri 'self';" .
-            "frame-ancestors 'none';"
-        );
+        $policy = collect(config('csp.directives'))
+            ->map(fn($sources, $directive) => $directive . ' ' . implode(' ', str_replace('{nonce}', $nonce, $sources)))
+            ->implode('; ');
+
+        $response->headers->set('Content-Security-Policy', $policy);
 
         return $response;
     }

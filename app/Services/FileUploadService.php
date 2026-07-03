@@ -42,59 +42,40 @@ class FileUploadService
         }
     }
 
-    public function uploadProfilePhoto(UploadedFile $file, string $userId): ?string
+    private function storeFile(UploadedFile $file, string $path, string $context): ?string
     {
         try {
             $this->validateFile($file);
-            return $file->store("interns/{$userId}/photo", 'private');
+            return $file->store($path, 'private');
         } catch (\Throwable $e) {
-            Log::error("[FileUpload] Profile photo failed for user {$userId}: {$e->getMessage()}");
+            Log::error("[FileUpload] {$context} failed: {$e->getMessage()}");
             return null;
         }
+    }
+
+    public function uploadProfilePhoto(UploadedFile $file, string $userId): ?string
+    {
+        return $this->storeFile($file, "interns/{$userId}/photo", 'Profile photo');
     }
 
     public function uploadCv(UploadedFile $file, string $userId): ?string
     {
-        try {
-            $this->validateFile($file);
-            return $file->store("interns/{$userId}/cv", 'private');
-        } catch (\Throwable $e) {
-            Log::error("[FileUpload] CV failed for user {$userId}: {$e->getMessage()}");
-            return null;
-        }
+        return $this->storeFile($file, "interns/{$userId}/cv", 'CV');
     }
 
     public function uploadCoverLetter(UploadedFile $file, string $userId): ?string
     {
-        try {
-            $this->validateFile($file);
-            return $file->store("interns/{$userId}/cover-letter", 'private');
-        } catch (\Throwable $e) {
-            Log::error("[FileUpload] Cover letter failed for user {$userId}: {$e->getMessage()}");
-            return null;
-        }
+        return $this->storeFile($file, "interns/{$userId}/cover-letter", 'Cover letter');
     }
 
     public function uploadFinalReport(UploadedFile $file, string $internshipId): ?string
     {
-        try {
-            $this->validateFile($file);
-            return $file->store("reports/{$internshipId}", 'private');
-        } catch (\Throwable $e) {
-            Log::error("[FileUpload] Final report failed for internship {$internshipId}: {$e->getMessage()}");
-            return null;
-        }
+        return $this->storeFile($file, "reports/{$internshipId}", 'Final report');
     }
 
     public function uploadCertificate(UploadedFile $file, string $internshipId): ?string
     {
-        try {
-            $this->validateFile($file);
-            return $file->store("certificates/{$internshipId}", 'private');
-        } catch (\Throwable $e) {
-            Log::error("[FileUpload] Certificate failed for internship {$internshipId}: {$e->getMessage()}");
-            return null;
-        }
+        return $this->storeFile($file, "certificates/{$internshipId}", 'Certificate');
     }
 
     public function delete(string $path): bool

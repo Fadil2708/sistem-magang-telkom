@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Internship;
 use App\Models\Logbook;
 use App\Models\User;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class LogbookService
 {
@@ -24,15 +24,16 @@ class LogbookService
 
         $this->ensureNoDuplicateDate($internshipId, $data['activity_date']);
 
-        return Logbook::create([
-            'id' => (string) Str::uuid(),
-            'internship_id' => $internshipId,
-            'intern_id' => $intern->id,
-            'activity_date' => $data['activity_date'],
-            'activities' => $data['activities'],
-            'output' => $data['output'],
-            'validation_status' => 'draft',
-        ]);
+        return DB::transaction(function () use ($internshipId, $intern, $data) {
+            return Logbook::create([
+                'internship_id' => $internshipId,
+                'intern_id' => $intern->id,
+                'activity_date' => $data['activity_date'],
+                'activities' => $data['activities'],
+                'output' => $data['output'],
+                'validation_status' => 'draft',
+            ]);
+        });
     }
 
     public function update(Logbook $logbook, User $intern, array $data): Logbook
@@ -45,9 +46,10 @@ class LogbookService
             throw new \Exception('Logbook hanya bisa diedit saat status draft atau revisi.');
         }
 
-        $logbook->update($data);
-
-        return $logbook->fresh();
+        return DB::transaction(function () use ($logbook, $data) {
+            $logbook->update($data);
+            return $logbook->fresh();
+        });
     }
 
     public function submit(Logbook $logbook, User $intern): Logbook
@@ -58,9 +60,10 @@ class LogbookService
 
         $this->validateTransition($logbook, 'submitted');
 
-        $logbook->update(['validation_status' => 'submitted']);
-
-        return $logbook->fresh();
+        return DB::transaction(function () use ($logbook) {
+            $logbook->update(['validation_status' => 'submitted']);
+            return $logbook->fresh();
+        });
     }
 
     public function review(Logbook $logbook, User $supervisor, string $action, ?string $notes = null): Logbook
@@ -77,13 +80,14 @@ class LogbookService
             throw new \Exception('Catatan revisi wajib diisi.');
         }
 
-        $logbook->update([
-            'validation_status' => $action,
-            'supervisor_notes' => $notes,
-            'reviewed_at' => now(),
-        ]);
-
-        return $logbook->fresh();
+        return DB::transaction(function () use ($logbook, $action, $notes) {
+            $logbook->update([
+                'validation_status' => $action,
+                'supervisor_notes' => $notes,
+                'reviewed_at' => now(),
+            ]);
+            return $logbook->fresh();
+        });
     }
 
     private function ensureNoDuplicateDate(string $internshipId, string $activityDate): void

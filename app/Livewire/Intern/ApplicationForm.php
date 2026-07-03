@@ -26,7 +26,7 @@ class ApplicationForm extends Component
         $intern = auth()->user();
         $profile = $intern->internProfile;
 
-        $required = ['full_name', 'institution_name', 'major', 'student_id', 'cv_url'];
+        $required = \App\Models\InternProfile::requiredFields();
         $this->profileComplete = $profile && collect($required)->every(fn($f) => !empty($profile->{$f}));
 
         $existing = $intern->applications()->where('vacancy_id', $this->vacancy->id)->first();

@@ -8,6 +8,9 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -79,14 +82,47 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function delete(): ?bool
     {
-        if ($this->isIntern()) {
-            foreach ($this->internships as $internship) {
-                $internship->certificate()?->delete();
-                $internship->delete();
+        DB::transaction(function () {
+            $this->anonymize()->save();
+            $this->update(['is_active' => false]);
+
+            if ($this->internProfile?->photo_url) {
+                Storage::disk(config('filesystems.private_disk'))->delete($this->internProfile->photo_url);
             }
+        });
+
+        return true;
+    }
+
+    private function anonymize(): self
+    {
+        $this->email = 'deleted-' . Str::uuid() . '@removed';
+        $this->email_verified_at = null;
+        $this->remember_token = null;
+
+        if ($this->internProfile) {
+            $this->internProfile->full_name = 'Akun Dihapus';
+            $this->internProfile->phone = null;
+            $this->internProfile->address = null;
+            $this->internProfile->institution_name = null;
+            $this->internProfile->major = null;
+            $this->internProfile->student_id = null;
+            $this->internProfile->photo_url = null;
+            $this->internProfile->cv_url = null;
+            $this->internProfile->cover_letter_url = null;
+            $this->internProfile->save();
         }
 
-        return parent::delete();
+        if ($this->supervisorProfile) {
+            $this->supervisorProfile->full_name = 'Akun Dihapus';
+            $this->supervisorProfile->employee_id = null;
+            $this->supervisorProfile->division = null;
+            $this->supervisorProfile->position = null;
+            $this->supervisorProfile->phone = null;
+            $this->supervisorProfile->save();
+        }
+
+        return $this;
     }
 
     public function isAdmin(): bool

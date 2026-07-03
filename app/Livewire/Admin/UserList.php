@@ -10,9 +10,9 @@ class UserList extends Component
 {
     use WithPagination;
 
-    public $search = '';
-    public $filterRole = '';
-    public $confirmingDeactivateId = null;
+    public string $search = '';
+    public string $filterRole = '';
+    public ?string $confirmingDeactivateId = null;
 
     public function updatingSearch(): void
     {

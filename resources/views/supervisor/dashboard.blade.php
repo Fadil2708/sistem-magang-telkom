@@ -2,32 +2,6 @@
 @section('title', 'Dashboard Pembimbing')
 @php $pageTitle = 'Dashboard Pembimbing'; @endphp
 
-@php
-    use App\Models\Internship;
-    use App\Models\Logbook;
-    use App\Models\FinalReport;
-
-    $supervisorId = auth()->id();
-    $internshipIds = Internship::where('supervisor_id', $supervisorId)->pluck('id');
-
-    $pendingLogbooksCount = Logbook::whereIn('internship_id', $internshipIds)
-        ->where('validation_status', 'submitted')
-        ->count();
-
-    $pendingReportsCount = FinalReport::whereIn('internship_id', $internshipIds)
-        ->where('supervisor_approval', 'pending')
-        ->count();
-
-    $recentLogbooks = Logbook::whereIn('internship_id', $internshipIds)
-        ->where('validation_status', 'submitted')
-        ->with('intern.internProfile', 'internship.vacancy')
-        ->latest('activity_date')
-        ->limit(5)
-        ->get();
-
-    $name = auth()->user()->supervisorProfile->full_name ?? auth()->user()->email ?? 'Pembimbing';
-@endphp
-
 @section('content')
 <div class="page-header">
     <div>

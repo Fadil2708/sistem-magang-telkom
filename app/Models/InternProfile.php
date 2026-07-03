@@ -33,6 +33,11 @@ class InternProfile extends Model
         return $this->belongsToMany(Skill::class)->withTimestamps();
     }
 
+    public static function requiredFields(): array
+    {
+        return ['full_name', 'institution_name', 'major', 'student_id', 'cv_url'];
+    }
+
     public function isComplete(): bool
     {
         return !empty($this->full_name)

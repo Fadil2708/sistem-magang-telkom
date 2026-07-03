@@ -13,16 +13,16 @@ class ApplicationReview extends Component
 {
     use WithPagination;
 
-    public $filterStatus = '';
-    public $filterVacancy = '';
-    public $selectedApplicationId = null;
+    public string $filterStatus = '';
+    public string $filterVacancy = '';
+    public ?string $selectedApplicationId = null;
 
     // Modal review
-    public $showReviewModal = false;
-    public $reviewStatus = '';
-    public $interviewDate = '';
-    public $rejectionReason = '';
-    public $adminNotes = '';
+    public bool $showReviewModal = false;
+    public string $reviewStatus = '';
+    public string $interviewDate = '';
+    public string $rejectionReason = '';
+    public string $adminNotes = '';
 
     public $selectedApplication = null;
 
@@ -119,13 +119,7 @@ class ApplicationReview extends Component
 
     private function getValidTransitions(string $currentStatus): array
     {
-        return match ($currentStatus) {
-            'submitted' => ['under_review'],
-            'under_review' => ['interview_scheduled', 'rejected'],
-            'interview_scheduled' => ['accepted', 'rejected'],
-            'rejected' => ['under_review'],
-            default => [],
-        };
+        return \App\Services\ApplicationService::TRANSITIONS[$currentStatus] ?? [];
     }
 
     public function render()

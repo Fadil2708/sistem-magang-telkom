@@ -3,34 +3,17 @@
 namespace App\Http\Controllers\Intern;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\InternshipResource;
-use App\Traits\ApiResponse;
-use Illuminate\Http\JsonResponse;
+use App\Models\Internship;
+use Illuminate\View\View;
 
 class InternshipController extends Controller
 {
-    use ApiResponse;
-
-    public function myInternship(): JsonResponse
+    public function index(): View
     {
-        $internships = request()->user()
-            ->internships()
-            ->with([
-                'vacancy',
-                'supervisor.supervisorProfile',
-                'evaluation',
-                'certificate',
-                'logbooks' => fn($q) => $q->latest()->take(5),
-            ])
-            ->latest()
-            ->paginate(15);
+        $internship = Internship::with([
+            'vacancy', 'supervisor.supervisorProfile'
+        ])->where('intern_id', auth()->id())->first();
 
-        return $this->success(
-            InternshipResource::collection($internships),
-            meta: [
-                'current_page' => $internships->currentPage(),
-                'total' => $internships->total(),
-            ]
-        );
+        return view('intern.internship.index', compact('internship'));
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Resources\InternshipResource;
 use App\Models\Internship;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class InternshipController extends Controller
 {
@@ -24,13 +25,7 @@ class InternshipController extends Controller
             'certificate',
         ])->findOrFail($id);
 
-        if (auth()->user()->isSupervisor() && $internship->supervisor_id !== auth()->id()) {
-            return $this->error('Anda tidak berhak mengakses data ini.', 403);
-        }
-
-        if (auth()->user()->isIntern() && $internship->intern_id !== auth()->id()) {
-            return $this->error('Anda tidak berhak mengakses data ini.', 403);
-        }
+        Gate::authorize('view', $internship);
 
         return $this->success(new InternshipResource($internship));
     }

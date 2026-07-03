@@ -37,7 +37,7 @@
                         </div>
                     </td>
                     <td>{{ $internship->vacancy->title }}</td>
-                    <td class="text-caption">{{ ($internship->start_date ?? $internship->vacancy?->start_date)?->format('d M Y') ?? '—' }} - {{ ($internship->end_date ?? $internship->vacancy?->end_date)?->format('d M Y') ?? '—' }}</td>
+                    <td class="text-caption">{{ ($internship->actual_start_date ?? $internship->vacancy?->start_date)?->format('d M Y') ?? '—' }} - {{ ($internship->actual_end_date ?? $internship->vacancy?->end_date)?->format('d M Y') ?? '—' }}</td>
                     <td>
                         <div class="intern-row">
                             <div class="intern-row-cell">

@@ -29,7 +29,7 @@ class ReportsExport implements FromQuery, WithHeadings, WithMapping
     public function map($report): array
     {
         return [
-            $report->intern?->internProfile?->full_name ?? $report->intern?->email,
+            $report->intern?->displayName(),
             $report->title,
             $report->internship?->vacancy?->title ?? '-',
             $report->submitted_at?->format('Y-m-d') ?? '-',

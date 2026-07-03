@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\Auditable;
 use App\Traits\HasUuid;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -72,13 +73,13 @@ class Internship extends Model
         return $this->hasOne(Testimonial::class);
     }
 
-    public function getStartDateAttribute()
+    public function scopeActive(Builder $query): Builder
     {
-        return $this->actual_start_date;
+        return $query->where('status', 'active');
     }
 
-    public function getEndDateAttribute()
+    public function scopeCompleted(Builder $query): Builder
     {
-        return $this->actual_end_date;
+        return $query->where('status', 'completed');
     }
 }

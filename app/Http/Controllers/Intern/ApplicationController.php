@@ -3,69 +3,19 @@
 namespace App\Http\Controllers\Intern;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Application\StoreApplicationRequest;
-use App\Http\Resources\ApplicationResource;
 use App\Models\Application;
-use App\Notifications\ApplicationNotification;
-use App\Services\ApplicationService;
-use App\Traits\ApiResponse;
-use Illuminate\Http\JsonResponse;
+use Illuminate\View\View;
 
 class ApplicationController extends Controller
 {
-    use ApiResponse;
-
-    public function __construct(
-        private readonly ApplicationService $applicationService
-    ) {}
-
-    public function store(StoreApplicationRequest $request): JsonResponse
+    public function show(string $id): View
     {
-        try {
-            $application = $this->applicationService->apply(
-                $request->user(),
-                $request->vacancy_id
-            );
+        $application = Application::with([
+            'vacancy', 'intern.internProfile', 'internship'
+        ])->findOrFail($id);
 
-            $request->user()->notify(new ApplicationNotification($application, 'submitted'));
+        abort_if($application->intern_id !== auth()->id(), 403);
 
-            return $this->success(
-                new ApplicationResource($application->load('vacancy')),
-                'Lamaran berhasil dikirim.',
-                201
-            );
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 422);
-        }
-    }
-
-    public function myApplications(): JsonResponse
-    {
-        $applications = request()->user()
-            ->applications()
-            ->with('vacancy')
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
-
-        return $this->success(
-            ApplicationResource::collection($applications),
-            meta: [
-                'current_page' => $applications->currentPage(),
-                'total' => $applications->total(),
-            ]
-        );
-    }
-
-    public function cancel(string $id): JsonResponse
-    {
-        $user = request()->user();
-        $application = Application::where('intern_id', $user->id)->findOrFail($id);
-
-        try {
-            $this->applicationService->cancel($application);
-            return $this->success(null, 'Lamaran berhasil dibatalkan.');
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage(), 422);
-        }
+        return view('intern.applications.show', compact('application'));
     }
 }

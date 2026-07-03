@@ -10,11 +10,17 @@ class EnsureProfileComplete
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()->role === 'intern') {
-            $request->user()->load('internProfile');
-            $profile = $request->user()->internProfile;
+        $user = $request->user();
 
-            $required = ['full_name', 'institution_name', 'major', 'student_id', 'cv_url'];
+        if (!$user) {
+            return $next($request);
+        }
+
+        if ($user->role === 'intern') {
+            $user->load('internProfile');
+            $profile = $user->internProfile;
+
+            $required = \App\Models\InternProfile::requiredFields();
 
             foreach ($required as $field) {
                 if (!$profile || empty($profile->{$field})) {
