@@ -49,7 +49,7 @@
 @include('components.toast')
 @include('components.confirm-modal')
 
-@vite(['resources/js/app.js'])
+@vite(['resources/js/auth.js'])
 @stack('scripts')
 @livewireScripts
 
