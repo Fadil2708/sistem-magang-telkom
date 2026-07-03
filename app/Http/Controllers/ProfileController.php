@@ -51,7 +51,7 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-    public function photo(Request $request): StreamedResponse
+    public function photo(Request $request): StreamedResponse|\Illuminate\Http\Response
     {
         $user = $request->user();
 
@@ -64,7 +64,16 @@ class ProfileController extends Controller
             }
         }
 
-        abort(404);
+        $initial = strtoupper(substr($user->displayName() ?? $user->email, 0, 1));
+        $svg = <<<SVG
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="32" fill="#C0392B"/>
+  <text x="32" y="40" text-anchor="middle" fill="white"
+        font-size="28" font-family="sans-serif" font-weight="bold">{$initial}</text>
+</svg>
+SVG;
+
+        return response($svg, 200, ['Content-Type' => 'image/svg+xml']);
     }
 
     /**
