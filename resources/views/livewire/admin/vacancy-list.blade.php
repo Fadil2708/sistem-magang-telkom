@@ -34,7 +34,12 @@
                 <tr>
                     <td><span class="font-medium">{{ $v->title }}</span></td>
                     <td>{{ $v->division ?? '-' }}</td>
-                    <td>{{ $v->quota }}</td>
+                    <td>
+                        {{ $v->accepted_applications_count ?? 0 }} / {{ $v->quota }}
+                        @if(($v->accepted_applications_count ?? 0) >= $v->quota)
+                            <i class="ti ti-circle-check" style="color:#16A34A;font-size:14px;margin-left:4px"></i>
+                        @endif
+                    </td>
                     <td>{{ $v->application_deadline->format('d M Y') }}</td>
                     <td><x-badge status="{{ $v->status }}" /></td>
                     <td class="text-right">

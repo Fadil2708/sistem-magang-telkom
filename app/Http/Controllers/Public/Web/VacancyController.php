@@ -12,7 +12,7 @@ class VacancyController extends Controller
     {
         Vacancy::autoCloseExpired();
 
-        $query = Vacancy::where('status', 'open')
+        $query = Vacancy::withCount('acceptedApplications')->where('status', 'open')
             ->whereDate('application_deadline', '>=', now()->toDateString())
             ->with('creator');
 

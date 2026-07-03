@@ -18,7 +18,7 @@ class VacancyList extends Component
 
     public function render()
     {
-        $vacancies = Vacancy::where('status', 'open')
+        $vacancies = Vacancy::withCount('acceptedApplications')->where('status', 'open')
             ->where('application_deadline', '>=', now()->format('Y-m-d'))
             ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->when($this->filterDivision, fn($q) => $q->where('division', $this->filterDivision))

@@ -20,14 +20,24 @@
                 <p class="text-body-sm" style="margin-bottom:12px">{{ $v->division }}</p>
                 <p class="text-body" style="margin-bottom:16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">{{ Str::limit($v->description, 120) }}</p>
                 <div style="display:flex;align-items:center;justify-content:space-between;font-size:12px;color:#A8A5A0">
-                    <span><i class="ti ti-users" style="font-size:14px"></i> Kuota: {{ $v->quota }}</span>
+                    <span><i class="ti ti-users" style="font-size:14px"></i> Kuota: {{ $v->quota }}
+                        @if($v->accepted_applications_count >= $v->quota)
+                            <span class="badge badge-danger" style="font-size:11px;margin-left:6px">Penuh</span>
+                        @endif
+                    </span>
                     <span><i class="ti ti-calendar" style="font-size:14px"></i> {{ $v->application_deadline?->format('d M Y') ?? '—' }}</span>
                 </div>
             </div>
             <div style="padding:12px 20px;border-top:1px solid #E8E6E1">
-                <a href="{{ route('intern.applications.create', $v->id) }}" class="btn-primary" style="display:block;text-align:center">
-                    Lamar Sekarang
-                </a>
+                @if($v->accepted_applications_count >= $v->quota)
+                    <button class="btn-secondary" disabled style="display:block;text-align:center;width:100%;cursor:not-allowed">
+                        <i class="ti ti-x-circle"></i> Kuota Penuh
+                    </button>
+                @else
+                    <a href="{{ route('intern.applications.create', $v->id) }}" class="btn-primary" style="display:block;text-align:center">
+                        Lamar Sekarang
+                    </a>
+                @endif
             </div>
         </div>
         @empty

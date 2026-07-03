@@ -22,7 +22,14 @@
 
         <div class="vacancy-body">
             <div class="stat-grid">
-                <div class="stat-card"><div class="stat-num">{{ $vacancy->quota }}</div><div class="stat-lbl">Kuota</div></div>
+                <div class="stat-card">
+                    <div class="stat-num">{{ $vacancy->quota }}
+                        @if($vacancy->isFull())
+                            <span style="font-size:11px;color:#DC2626;display:block">Penuh</span>
+                        @endif
+                    </div>
+                    <div class="stat-lbl">Kuota</div>
+                </div>
                 <div class="stat-card"><div class="stat-date">{{ $vacancy->start_date->format('d M Y') }}</div><div class="stat-lbl">Mulai</div></div>
                 <div class="stat-card"><div class="stat-date">{{ $vacancy->end_date->format('d M Y') }}</div><div class="stat-lbl">Selesai</div></div>
                 <div class="stat-card"><div class="stat-date stat-warn">{{ $vacancy->application_deadline->format('d M Y') }}</div><div class="stat-lbl">Deadline</div></div>
@@ -49,9 +56,15 @@
     <div class="vac-cta">
         @auth
             @if(auth()->user()->role === 'intern' && $vacancy->status === 'open')
-                <a href="{{ route('intern.applications.create', $vacancy) }}" class="btn-primary btn-lg">
-                    <i class="ti ti-send"></i> Daftar Sekarang
-                </a>
+                @if($vacancy->isFull())
+                    <button class="btn-secondary btn-lg" disabled style="cursor:not-allowed">
+                        <i class="ti ti-x-circle"></i> Kuota Penuh
+                    </button>
+                @else
+                    <a href="{{ route('intern.applications.create', $vacancy) }}" class="btn-primary btn-lg">
+                        <i class="ti ti-send"></i> Daftar Sekarang
+                    </a>
+                @endif
             @else
                 <a href="{{ url('/dashboard') }}" class="btn-primary btn-lg">
                     <i class="ti ti-layout-dashboard"></i> Dashboard

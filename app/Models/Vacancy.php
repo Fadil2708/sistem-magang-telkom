@@ -7,6 +7,7 @@ use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Vacancy extends Model
 {
@@ -45,6 +46,23 @@ class Vacancy extends Model
     public function scopeClosed(Builder $query): Builder
     {
         return $query->where('status', 'closed');
+    }
+
+    public function acceptedApplications(): HasMany
+    {
+        return $this->hasMany(Application::class)->where('status', 'accepted');
+    }
+
+    public function isFull(): bool
+    {
+        return $this->accepted_applications_count !== null
+            ? $this->accepted_applications_count >= $this->quota
+            : $this->acceptedApplications()->count() >= $this->quota;
+    }
+
+    public function acceptedCount(): int
+    {
+        return $this->accepted_applications_count ?? $this->acceptedApplications()->count();
     }
 
     public static function autoCloseExpired(): int

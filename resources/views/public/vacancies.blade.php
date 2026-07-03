@@ -57,6 +57,9 @@
                     <span class="vac-meta-item">
                         <i class="ti ti-users"></i>
                         Kuota: {{ $vacancy->quota }} orang
+                        @if($vacancy->accepted_applications_count >= $vacancy->quota)
+                            <span class="badge badge-danger" style="font-size:11px;margin-left:6px">Kuota Penuh</span>
+                        @endif
                     </span>
                     <span class="vac-meta-item vac-meta-deadline">
                         <i class="ti ti-calendar"></i>

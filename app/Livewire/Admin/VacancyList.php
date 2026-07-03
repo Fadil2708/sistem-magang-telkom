@@ -53,7 +53,7 @@ class VacancyList extends Component
     {
         Vacancy::autoCloseExpired();
 
-        $vacancies = Vacancy::query()
+        $vacancies = Vacancy::withCount('acceptedApplications')
             ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
             ->when($this->filterStatus, fn($q) => $q->where('status', $this->filterStatus))
             ->orderBy($this->sortField, $this->sortDirection)
