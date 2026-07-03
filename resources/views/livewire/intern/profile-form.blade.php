@@ -30,8 +30,7 @@
                     <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
                         <div class="profile-avatar">
                             @if($photo_url)
-                                <img src="{{ $photo_url }}" alt="Foto Profil" loading="lazy" width="64" height="64"
-                                     onerror="var p=this.parentElement;console.log(p);this.style.display='none';p.innerHTML='{{ strtoupper(substr($full_name ?? '?', 0, 1)) }}'">
+                                <img src="{{ $photo_url }}" alt="Foto Profil" loading="lazy" width="64" height="64">
                             @else
                                 {{ strtoupper(substr($full_name, 0, 1)) }}
                             @endif

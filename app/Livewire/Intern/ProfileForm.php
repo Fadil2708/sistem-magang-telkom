@@ -5,6 +5,7 @@ namespace App\Livewire\Intern;
 use App\Models\InternProfile;
 use App\Models\Skill;
 use App\Services\FileUploadService;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -42,6 +43,7 @@ class ProfileForm extends Component
     public function mount(): void
     {
         $profile = auth()->user()->internProfile;
+        $disk = Storage::disk(config('filesystems.private_disk'));
 
         if ($profile) {
             $this->full_name = $profile->full_name;
@@ -54,12 +56,12 @@ class ProfileForm extends Component
             $this->institution_type = $profile->institution_type;
             $this->major = $profile->major;
             $this->student_id = $profile->student_id;
-            $this->existing_photo_url = $profile->photo_url;
-            $this->existing_cv_url = $profile->cv_url;
-            $this->existing_cover_letter_url = $profile->cover_letter_url;
-            $this->photo_url = $profile->photo_url ? url('private/' . $profile->photo_url) : '';
-            $this->cv_url = $profile->cv_url ? url('private/' . $profile->cv_url) : '';
-            $this->cover_letter_url = $profile->cover_letter_url ? url('private/' . $profile->cover_letter_url) : '';
+            $this->existing_photo_url = $profile->photo_url && $disk->exists($profile->photo_url) ? $profile->photo_url : '';
+            $this->existing_cv_url = $profile->cv_url && $disk->exists($profile->cv_url) ? $profile->cv_url : '';
+            $this->existing_cover_letter_url = $profile->cover_letter_url && $disk->exists($profile->cover_letter_url) ? $profile->cover_letter_url : '';
+            $this->photo_url = $this->existing_photo_url ? url('private/' . $this->existing_photo_url) : '';
+            $this->cv_url = $this->existing_cv_url ? url('private/' . $this->existing_cv_url) : '';
+            $this->cover_letter_url = $this->existing_cover_letter_url ? url('private/' . $this->existing_cover_letter_url) : '';
         }
 
         $this->hasProfile = $profile && !empty($profile->full_name);
@@ -146,12 +148,14 @@ class ProfileForm extends Component
 
         $profile = InternProfile::updateOrCreate(['user_id' => auth()->id()], $data);
         $profile->skills()->sync($this->selectedSkills);
-        $this->existing_photo_url = $profile->photo_url;
-        $this->existing_cv_url = $profile->cv_url;
-        $this->existing_cover_letter_url = $profile->cover_letter_url;
-        $this->photo_url = $profile->photo_url ? url('private/' . $profile->photo_url) : '';
-        $this->cv_url = $profile->cv_url ? url('private/' . $profile->cv_url) : '';
-        $this->cover_letter_url = $profile->cover_letter_url ? url('private/' . $profile->cover_letter_url) : '';
+        $disk = Storage::disk(config('filesystems.private_disk'));
+
+        $this->existing_photo_url = $profile->photo_url && $disk->exists($profile->photo_url) ? $profile->photo_url : '';
+        $this->existing_cv_url = $profile->cv_url && $disk->exists($profile->cv_url) ? $profile->cv_url : '';
+        $this->existing_cover_letter_url = $profile->cover_letter_url && $disk->exists($profile->cover_letter_url) ? $profile->cover_letter_url : '';
+        $this->photo_url = $this->existing_photo_url ? url('private/' . $this->existing_photo_url) : '';
+        $this->cv_url = $this->existing_cv_url ? url('private/' . $this->existing_cv_url) : '';
+        $this->cover_letter_url = $this->existing_cover_letter_url ? url('private/' . $this->existing_cover_letter_url) : '';
         $this->selectedSkills = $profile->skills->pluck('id')->toArray();
         $this->isEditing = false;
         $this->hasProfile = true;
