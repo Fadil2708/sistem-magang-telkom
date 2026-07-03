@@ -17,6 +17,9 @@ return [
         'script-src' => [
             "'self'",
             "'nonce-{nonce}'",
+            // Required by Alpine.js CDN build (new Function()).
+            // Remove only after CSP build migration (Sprint 6).
+            "'unsafe-eval'",
             'https://cdn.jsdelivr.net',
             'https://unpkg.com',
         ],
