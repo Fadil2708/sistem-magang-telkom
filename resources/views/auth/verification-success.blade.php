@@ -1,7 +1,7 @@
 <x-guest-layout>
     @section('title', 'Email Terverifikasi')
 
-    <div class="text-center auth-form-header" x-init="setTimeout(() => window.location.href = '{{ route('dashboard') }}', 2000)">
+    <div class="text-center auth-form-header">
         <div class="icon-circle-green">
             <i class="ti ti-circle-check"></i>
         </div>
@@ -16,4 +16,8 @@
             Jika tidak dialihkan, <a href="{{ route('dashboard') }}" class="link-brand">klik di sini</a>.
         </p>
     </div>
+
+    <script nonce="{{ $cspNonce }}">
+        setTimeout(() => window.location.href = '{{ route('dashboard') }}', 2000);
+    </script>
 </x-guest-layout>

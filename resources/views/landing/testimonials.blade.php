@@ -20,7 +20,7 @@
     @if($testimonials->isNotEmpty())
     <div class="testi-carousel" x-data="testiCarousel" style="margin-top:28px">
         <div class="testi-track-wrapper">
-            <div class="testi-track" :style="{ transform: `translateX(-${current * 100}%)` }">
+            <div class="testi-track" :style="trackStyle">
                 @foreach($testimonials as $testimonial)
                 @php
                     $tName = $testimonial->intern?->internProfile?->full_name ?? 'Anonymous';

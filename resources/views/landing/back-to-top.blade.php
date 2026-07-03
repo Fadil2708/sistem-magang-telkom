@@ -1,7 +1,6 @@
-<button x-data="{ visible: false }"
-        x-init="window.addEventListener('scroll', () => { visible = window.scrollY > 500 }, { passive: true })"
+<button x-data="backToTop"
         x-show="visible"
-        @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+        @click="scrollTop"
         x-transition:enter="anim-fade-in"
         x-transition:leave="anim-fade-in"
         x-cloak

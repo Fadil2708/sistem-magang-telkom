@@ -39,7 +39,6 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.33.0/dist/tabler-icons.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js" nonce="{{ $cspNonce }}"></script>
 
     @vite(['resources/css/app.css'])
 
@@ -58,9 +57,7 @@
 
     <a href="#main-content" class="skip-link">Lompat ke konten utama</a>
 
-    <div class="scroll-progress" x-data="{ scroll: 0 }"
-         x-init="window.addEventListener('scroll', () => { scroll = Math.min((window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100, 100) }, { passive: true })"
-         :style="`width: ${scroll}%`"></div>
+    <div class="scroll-progress" x-data="scrollProgress" :style="style"></div>
 
     @php
         $announcementEnabled = \App\Models\SiteSetting::getValue('announcement_enabled', '0');
@@ -68,7 +65,7 @@
         $announcementDeadline = \App\Models\SiteSetting::getValue('announcement_deadline', '');
     @endphp
     @if($announcementEnabled === '1' && $announcementText)
-    <div class="alert-bar" x-data="{ show: !localStorage.getItem('alert-dismissed') }"
+    <div class="alert-bar" x-data="alertBar"
          x-show="show" role="alert">
         <div class="alert-bar-inner">
             <i class="ti ti-sparkles alert-bar-icon"></i>
@@ -78,7 +75,7 @@
                 Daftar sekarang sebelum <span class="alert-bar-deadline">{{ $announcementDeadline }}</span>.
                 @endif
             </span>
-            <button @click="show = false; localStorage.setItem('alert-dismissed', '1')" class="alert-bar-close" aria-label="Tutup pengumuman">
+            <button @click="dismiss" class="alert-bar-close" aria-label="Tutup pengumuman">
                 <i class="ti ti-x"></i>
             </button>
         </div>
@@ -88,25 +85,23 @@
     {{-- ═══════════════════════════════════════════════════════════
          NAVBAR — Sticky blurred glass (updated layout)
          ═══════════════════════════════════════════════════════════ --}}
-    <nav class="public-nav" x-data="{ navOpen: false }"
-         @click.away="navOpen = false"
-         @keydown.escape.window="navOpen = false">
+    <nav class="public-nav" x-data="publicNav"
+         @click.away="close"
+         @keydown.escape.window="close">
         <a href="{{ url('/') }}" class="public-nav-logo">
             <picture><source srcset="{{ asset('images/TLK_BIG.webp') }}" type="image/webp"><img src="{{ asset('images/TLK_BIG.png') }}" alt="Telkom Sukabumi"></picture>
         </a>
 
-        <button @click="navOpen = !navOpen" class="public-nav-toggle" aria-label="Menu">
+        <button @click="toggle" class="public-nav-toggle" aria-label="Menu">
             <i x-show="!navOpen" class="ti ti-menu-2"></i>
             <i x-show="navOpen" class="ti ti-x"></i>
         </button>
 
-        <div class="public-nav-links" :class="navOpen ? 'open' : ''">
+        <div class="public-nav-links" :class="{ open: navOpen }">
             <a href="{{ route('public.vacancies') }}"
-               x-data
-               @click.prevent="if (window.location.pathname === '/') { document.getElementById('section-vacancies')?.scrollIntoView({ behavior: 'smooth' }); navOpen = false; } else { window.location = '{{ route('public.vacancies') }}'; }">Cari Lowongan</a>
+               @click.prevent="navigate($event, 'section-vacancies')">Cari Lowongan</a>
             <a href="{{ route('public.testimonials') }}"
-               x-data
-               @click.prevent="if (window.location.pathname === '/') { document.getElementById('section-testimonials')?.scrollIntoView({ behavior: 'smooth' }); navOpen = false; } else { window.location = '{{ route('public.testimonials') }}'; }">Testimoni</a>
+               @click.prevent="navigate($event, 'section-testimonials')">Testimoni</a>
             <a href="{{ url('/#section-faq') }}">FAQ</a>
             <a href="{{ route('public.tentang-kami') }}">Tentang Kami</a>
 
@@ -133,7 +128,7 @@
             @endauth
         </div>
 
-        <div x-show="navOpen" @click="navOpen = false" class="nav-overlay" x-cloak></div>
+        <div x-show="navOpen" @click="close" class="nav-overlay" x-cloak></div>
     </nav>
 
     @yield('content')
@@ -202,7 +197,7 @@
         </div>
     </footer>
 
-    <div class="cookie-consent" x-data="{ show: !localStorage.getItem('cookie-consent') }"
+    <div class="cookie-consent" x-data="cookieConsent"
          x-show="show" x-cloak>
         <div class="cookie-consent-inner">
             <div class="cookie-consent-text">
@@ -210,7 +205,7 @@
                 <span>Kami menggunakan cookie untuk meningkatkan pengalaman Anda. Dengan melanjutkan, Anda menyetujui penggunaan cookie sesuai <a href="#" class="cookie-consent-link">Kebijakan Privasi</a> kami.</span>
             </div>
             <div class="cookie-consent-actions">
-                <button @click="show = false; localStorage.setItem('cookie-consent', '1')" class="btn-primary" style="padding:8px 18px;font-size:12px;white-space:nowrap">Terima</button>
+                <button @click="accept" class="btn-primary" style="padding:8px 18px;font-size:12px;white-space:nowrap">Terima</button>
             </div>
         </div>
     </div>

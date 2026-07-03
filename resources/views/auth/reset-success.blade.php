@@ -1,7 +1,7 @@
 <x-guest-layout>
     @section('title', 'Password Direset')
 
-    <div class="text-center auth-form-header" x-init="setTimeout(() => window.location.href = '{{ route('login') }}', 2000)">
+    <div class="text-center auth-form-header">
         <div class="icon-circle-green">
             <i class="ti ti-shield-check"></i>
         </div>
@@ -17,4 +17,8 @@
             Jika tidak dialihkan, <a href="{{ route('login') }}" class="link-brand">klik di sini</a>.
         </p>
     </div>
+
+    <script nonce="{{ $cspNonce }}">
+        setTimeout(() => window.location.href = '{{ route('login') }}', 2000);
+    </script>
 </x-guest-layout>

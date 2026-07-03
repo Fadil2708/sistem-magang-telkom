@@ -37,10 +37,10 @@
             </div>
         </div>
         <div class="hero-visual" data-reveal
-             x-data="{ x: 0, y: 0 }"
-             @mousemove="x = (event.offsetX / $el.offsetWidth - 0.5) * 16; y = (event.offsetY / $el.offsetHeight - 0.5) * 16"
-             @mouseleave="x = 0; y = 0"
-             :style="{ transform: `translate(${x}px, ${y}px)` }">
+             x-data="heroParallax"
+             @mousemove="move"
+             @mouseleave="reset"
+             :style="style">
             <div class="hero-visual-frame">
                 <picture>
                     <source srcset="{{ asset('images/gedungtelkom.webp') }}" type="image/webp">

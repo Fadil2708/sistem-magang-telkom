@@ -37,7 +37,7 @@
                 <span x-show="loading">Menyimpan...</span>
             </button>
             @if (session('status') === 'password-updated')
-                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
+                <p x-data="timedHide" x-show="show" x-transition
                    style="font-size:13px;color:#16A34A;font-weight:600">
                     <i class="ti ti-circle-check"></i> {{ __('Saved.') }}
                 </p>
