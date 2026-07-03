@@ -30,5 +30,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Internship::class, InternshipPolicy::class);
 
         View::composer('layouts.app', LayoutComposer::class);
+        View::composer('*', LayoutComposer::class);
     }
 }
