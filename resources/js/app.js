@@ -14,6 +14,7 @@ import registerToastStack from './alpine/toast-stack';
 import registerPartnerMarquee from './alpine/partner-marquee';
 import registerOfferSlider from './alpine/offer-slider';
 import registerTestiCarousel from './alpine/testi-carousel';
+import registerConfirmModal from './alpine/confirm-modal';
 
 registerScrollProgress(Alpine);
 registerAlertBar(Alpine);
@@ -26,6 +27,7 @@ registerToastStack(Alpine);
 registerPartnerMarquee(Alpine);
 registerOfferSlider(Alpine);
 registerTestiCarousel(Alpine);
+registerConfirmModal(Alpine);
 
 // Score calculator for evaluation form
 Alpine.data('scoreCalc', () => ({

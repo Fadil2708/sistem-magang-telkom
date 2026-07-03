@@ -1,18 +1,4 @@
-<div x-data="{
-    open: false,
-    message: '',
-    callback: null,
-    show(msg, cb) {
-        this.message = msg;
-        this.callback = cb;
-        this.open = true;
-    },
-    confirm() {
-        if (this.callback) this.callback();
-        this.open = false;
-        this.callback = null;
-    }
-}"
+<div x-data="confirmModal"
 @confirm.window="show($event.detail.message, $event.detail.callback)"
 x-show="open"
 x-cloak
