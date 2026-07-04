@@ -7,7 +7,7 @@
 @endphp
 <div id="toast-container"
      class="toast-wrap"
-     x-data="toastStack(@json($flashToasts))"
+     x-data='toastStack(@json($flashToasts, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP))'
      @toast.window="add">
     <template x-for="toast in toasts" :key="toast.id">
         <div x-transition:enter.duration.300ms.opacity

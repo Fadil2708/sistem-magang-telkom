@@ -6,7 +6,7 @@
     ];
 @endphp
 <div class="welcome-offer" id="section-offer" data-reveal
-     x-data="offerSlider(@json($offerSlides))"
+     x-data='offerSlider(@json($offerSlides, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP))'
      @mouseenter="pause = true"
      @mouseleave="pause = false">
 
