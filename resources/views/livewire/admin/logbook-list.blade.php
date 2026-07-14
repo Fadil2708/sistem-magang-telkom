@@ -1,4 +1,18 @@
 <div>
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                <i class="ti ti-chevron-right"></i>
+                <span>Logbook</span>
+            </div>
+            <h2 class="page-title">Kelola Logbook</h2>
+            <p class="page-sub">Pantau dan review logbook kegiatan peserta</p>
+        </div>
+        <a href="{{ route('admin.export.logbooks') }}" class="btn-secondary">
+            <i class="ti ti-download"></i> Export
+        </a>
+    </div>
     <div class="filter-bar">
         <div class="search-box">
             <i class="ti ti-search"></i>

@@ -1,4 +1,15 @@
 <div x-data="{ selected: $wire.$entangle('selectedLogbooks') }">
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <a href="{{ route('supervisor.dashboard') }}">Dashboard</a>
+                <i class="ti ti-chevron-right"></i>
+                <span>Review Logbook</span>
+            </div>
+            <h2 class="page-title">Review Logbook</h2>
+            <p class="page-sub">Periksa dan validasi logbook harian peserta bimbingan</p>
+        </div>
+    </div>
     <div class="filter-bar">
         <div class="filter-tabs">
             <button wire:click="$set('filterStatus', 'submitted')" class="filter-tab" :class="{ 'active': filterStatus === 'submitted' }">Perlu Review</button>

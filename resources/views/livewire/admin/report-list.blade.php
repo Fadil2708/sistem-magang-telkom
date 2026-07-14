@@ -1,4 +1,18 @@
 <div>
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                <i class="ti ti-chevron-right"></i>
+                <span>Laporan</span>
+            </div>
+            <h2 class="page-title">Kelola Laporan</h2>
+            <p class="page-sub">Tinjau laporan akhir peserta magang</p>
+        </div>
+        <a href="{{ route('admin.export.reports') }}" class="btn-secondary">
+            <i class="ti ti-download"></i> Export
+        </a>
+    </div>
     <div class="filter-bar">
         <div class="filter-tabs" role="tablist" aria-label="Filter status">
             <button wire:click="$set('filterStatus', '')" class="filter-tab {{ $filterStatus === '' ? 'active' : '' }}">Semua</button>

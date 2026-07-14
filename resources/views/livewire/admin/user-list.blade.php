@@ -1,4 +1,18 @@
 <div>
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                <i class="ti ti-chevron-right"></i>
+                <span>Pengguna</span>
+            </div>
+            <h2 class="page-title">Kelola Pengguna</h2>
+            <p class="page-sub">Atur pengguna, pembimbing, dan admin sistem</p>
+        </div>
+        <a href="{{ route('admin.users.create') }}" class="btn-primary">
+            <i class="ti ti-plus"></i> Tambah Pengguna
+        </a>
+    </div>
     <div class="filter-bar">
         <div class="search-box">
             <i class="ti ti-search"></i>

@@ -1,4 +1,15 @@
 <div>
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <a href="{{ route('supervisor.dashboard') }}">Dashboard</a>
+                <i class="ti ti-chevron-right"></i>
+                <span>Peserta Bimbingan</span>
+            </div>
+            <h2 class="page-title">Peserta Bimbingan</h2>
+            <p class="page-sub">Pantau dan kelola peserta magang bimbingan anda</p>
+        </div>
+    </div>
     <div class="filter-bar">
         <div class="search-box">
             <i class="ti ti-search"></i>

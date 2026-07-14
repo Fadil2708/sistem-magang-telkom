@@ -1,4 +1,15 @@
 <div>
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                <i class="ti ti-chevron-right"></i>
+                <span>Sertifikat</span>
+            </div>
+            <h2 class="page-title">Kelola Sertifikat</h2>
+            <p class="page-sub">Terbitkan dan kelola sertifikat peserta magang</p>
+        </div>
+    </div>
     @if($pendingInternships->isNotEmpty())
     <div style="margin-bottom:24px;padding:16px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px">
         <h3 style="font-size:12px;font-weight:700;color:#92400E;margin-bottom:12px">Magang Selesai — Menunggu Penerbitan Sertifikat</h3>

@@ -4,6 +4,13 @@
 
 @section('content')
 
+<div class="page-header">
+    <div>
+        <h2 class="page-title">Dashboard Admin</h2>
+        <p class="page-sub">Pantau dan kelola seluruh aktivitas magang dari sini</p>
+    </div>
+</div>
+
 {{-- Hero Greeting --}}
 <div class="panel panel-accent p-5 mb-5">
     <div class="flex-between">

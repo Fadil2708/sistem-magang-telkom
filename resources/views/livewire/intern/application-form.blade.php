@@ -1,4 +1,15 @@
 <div>
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <a href="{{ route('intern.dashboard') }}">Dashboard</a>
+                <i class="ti ti-chevron-right"></i>
+                <a href="{{ route('intern.vacancies') }}">Lowongan</a>
+                <i class="ti ti-chevron-right"></i>
+                <span>Daftar</span>
+            </div>
+        </div>
+    </div>
     <div style="max-width:600px;margin:0 auto">
         <div class="panel form-card" style="margin-bottom:20px">
             <h2 class="text-hero" style="margin:0 0 4px">{{ $vacancy->title }}</h2>

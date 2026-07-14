@@ -1,4 +1,18 @@
 <div>
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                <i class="ti ti-chevron-right"></i>
+                <span>Lowongan</span>
+            </div>
+            <h2 class="page-title">Kelola Lowongan</h2>
+            <p class="page-sub">Atur lowongan magang yang ditampilkan ke publik</p>
+        </div>
+        <a href="{{ route('admin.vacancies.create') }}" class="btn-primary">
+            <i class="ti ti-plus"></i> Lowongan Baru
+        </a>
+    </div>
     <div class="filter-bar">
         <div class="search-box">
             <i class="ti ti-search"></i>

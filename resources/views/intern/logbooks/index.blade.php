@@ -4,6 +4,18 @@
 
 @section('content')
 
+<div class="page-header">
+    <div>
+        <div class="breadcrumb">
+            <a href="{{ route('intern.dashboard') }}">Dashboard</a>
+            <i class="ti ti-chevron-right"></i>
+            <span>Logbook</span>
+        </div>
+        <h2 class="page-title">Logbook Saya</h2>
+        <p class="page-sub">Catat dan pantau kegiatan magang harian anda</p>
+    </div>
+</div>
+
 <div class="logbook-header">
     <div class="logbook-today">
         <div class="today-date">{{ \Carbon\Carbon::now()->translatedFormat('l, d F Y') }}</div>

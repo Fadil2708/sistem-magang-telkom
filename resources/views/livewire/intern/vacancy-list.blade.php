@@ -1,4 +1,15 @@
 <div>
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <a href="{{ route('intern.dashboard') }}">Dashboard</a>
+                <i class="ti ti-chevron-right"></i>
+                <span>Lowongan</span>
+            </div>
+            <h2 class="page-title">Daftar Lowongan</h2>
+            <p class="page-sub">Cari dan daftar lowongan magang yang tersedia</p>
+        </div>
+    </div>
     <div class="filter-bar">
         <div class="search-box">
             <i class="ti ti-search"></i>

@@ -1,4 +1,15 @@
 <div>
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+                <i class="ti ti-chevron-right"></i>
+                <span>Pembimbing</span>
+            </div>
+            <h2 class="page-title">Pemetaan Pembimbing</h2>
+            <p class="page-sub">Atur pembimbing untuk setiap peserta magang</p>
+        </div>
+    </div>
     <div class="filter-bar">
         <select wire:model.live="filterStatus" class="filter-tab">
             <option value="active">Magang Aktif</option>

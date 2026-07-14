@@ -1,4 +1,15 @@
 <div>
+    <div class="page-header">
+        <div>
+            <div class="breadcrumb">
+                <a href="{{ route('supervisor.dashboard') }}">Dashboard</a>
+                <i class="ti ti-chevron-right"></i>
+                <span>Review Laporan</span>
+            </div>
+            <h2 class="page-title">Review Laporan</h2>
+            <p class="page-sub">Periksa dan validasi laporan akhir peserta bimbingan</p>
+        </div>
+    </div>
     <div class="filter-bar">
         <div class="filter-tabs">
             <button wire:click="$set('filterStatus', 'pending')" class="filter-tab" :class="{ 'active': filterStatus === 'pending' }">Perlu Review</button>
