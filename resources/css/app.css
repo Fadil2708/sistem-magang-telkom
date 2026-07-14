@@ -37,28 +37,6 @@
     --transition-base: 250ms var(--ease);
 }
 
-.dark {
-    --surface: 26 10 10;
-    --panel-bg: 45 15 15;
-    --panel-border: 61 26 26;
-    --body-bg: 5 0 5;
-
-    --text-primary: 248 250 252;
-    --text-secondary: 203 213 225;
-    --text-muted: 148 163 184;
-    --text-light: 71 85 105;
-
-    --input-bg: 26 10 10;
-    --hover-bg: 45 15 15;
-    --skeleton-base: 45 15 15;
-    --skeleton-shift: 61 26 26;
-
-    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.2), 0 1px 3px rgb(0 0 0 / 0.25);
-    --shadow-md: 0 2px 4px rgb(0 0 0 / 0.2), 0 4px 12px rgb(0 0 0 / 0.3);
-    --shadow-lg: 0 4px 8px rgb(0 0 0 / 0.2), 0 8px 24px rgb(0 0 0 / 0.4);
-    --shadow-xl: 0 8px 16px rgb(0 0 0 / 0.2), 0 16px 48px rgb(0 0 0 / 0.5);
-}
-
 @layer base {
     h1, h2, h3, h4, h5, h6 {
         font-family: 'Poppins', sans-serif;
@@ -344,22 +322,6 @@
     .topbar-user-btn:hover,
     .topbar-user-btn-open { background: rgb(var(--hover-bg)); }
 
-    .theme-toggle {
-        display: inline-flex; align-items: center; justify-content: center;
-        width: 32px; height: 32px; border-radius: var(--radius-sm);
-        border: none; background: none;
-        font-size: 16px; cursor: pointer;
-        color: rgb(var(--text-muted));
-        transition: all var(--transition-fast);
-        flex-shrink: 0;
-    }
-    .theme-toggle:hover {
-        background: rgb(var(--hover-bg));
-        color: rgb(var(--accent) / 1);
-    }
-    .dark .theme-toggle:hover {
-        color: #FBBF24;
-    }
     .topbar-avatar {
         width: 28px; height: 28px; border-radius: 50%;
         background: rgb(var(--brand) / 0.08); color: rgb(var(--brand) / 1);
