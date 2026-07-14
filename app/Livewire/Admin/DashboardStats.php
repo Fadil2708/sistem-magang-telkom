@@ -7,6 +7,7 @@ use App\Models\Internship;
 use App\Models\Vacancy;
 use App\Models\Logbook;
 use App\Models\Certificate;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class DashboardStats extends Component
@@ -42,12 +43,19 @@ class DashboardStats extends Component
         $this->quotaTotal = Vacancy::sum('quota');
         $this->quotaUsed = Internship::whereIn('status', ['active', 'completed'])->count();
 
+        $sixMonthsAgo = now()->subMonths(5)->startOfMonth();
+        $monthlyCounts = Application::where('created_at', '>=', $sixMonthsAgo)
+            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as count')
+            ->groupBy('year', 'month')
+            ->orderBy('year')
+            ->orderBy('month')
+            ->get()
+            ->keyBy(fn($item) => $item->year . '-' . str_pad($item->month, 2, '0', STR_PAD_LEFT));
+
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             $this->monthlyLabels[] = $date->isoFormat('MMM');
-            $this->monthlyApplications[] = Application::whereMonth('created_at', $date->month)
-                ->whereYear('created_at', $date->year)
-                ->count();
+            $this->monthlyApplications[] = $monthlyCounts[$date->format('Y-m')]->count ?? 0;
         }
     }
 

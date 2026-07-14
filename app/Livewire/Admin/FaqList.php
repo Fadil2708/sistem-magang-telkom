@@ -17,12 +17,14 @@ class FaqList extends Component
 
     public function create(): void
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
         $this->resetForm();
         $this->editingId = 'new';
     }
 
     public function edit(string $id): void
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
         $faq = Faq::findOrFail($id);
         $this->editingId = $id;
         $this->question = $faq->question;

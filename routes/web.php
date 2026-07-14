@@ -97,7 +97,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::get('/profile', ProfileForm::class)->name('profile');
         Route::get('/vacancies', InternVacancyList::class)->name('vacancies');
-        Route::get('/applications/create/{vacancyId}', ApplicationForm::class)->name('applications.create');
+        Route::get('/applications/create/{vacancyId}', ApplicationForm::class)->middleware('profile.complete')->name('applications.create');
         Route::get('/applications', MyApplications::class)->name('applications');
         Route::get('/applications/{application}', [\App\Http\Controllers\Intern\ApplicationController::class, 'show'])->name('applications.show');
         Route::get('/internship', [\App\Http\Controllers\Intern\InternshipController::class, 'index'])->name('internship');

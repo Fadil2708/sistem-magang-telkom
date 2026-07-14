@@ -14,6 +14,7 @@ class InviteList extends Component
 
     public function generate(): void
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
         $invite = RegistrationInvite::generate('supervisor', expiresAt: now()->addHour());
         session()->flash('inviteCode', $invite->code);
         $this->dispatch('toast', message: 'Kode undangan berhasil dibuat.', type: 'success');
