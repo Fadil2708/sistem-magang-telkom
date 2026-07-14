@@ -12,7 +12,26 @@
         </select>
     </div>
 
-    <div class="vacancy-grid">
+    <div wire:loading class="vacancy-grid">
+        @for($i = 0; $i < 4; $i++)
+        <div class="panel vacancy-card-inner">
+            <div style="padding:20px;flex:1">
+                <div class="skeleton-text skeleton-text-lg" style="width:200px;margin-bottom:8px"></div>
+                <div class="skeleton-text skeleton-text-sm" style="width:100px;margin-bottom:12px"></div>
+                <div class="skeleton-text" style="width:100%;margin-bottom:4px"></div>
+                <div class="skeleton-text" style="width:80%"></div>
+                <div style="display:flex;justify-content:space-between;margin-top:16px">
+                    <div class="skeleton-text skeleton-text-sm" style="width:100px"></div>
+                    <div class="skeleton-text skeleton-text-sm" style="width:120px"></div>
+                </div>
+            </div>
+            <div style="padding:12px 20px;border-top:1px solid #E8E6E1">
+                <div class="skeleton" style="width:100%;height:36px;border-radius:10px"></div>
+            </div>
+        </div>
+        @endfor
+    </div>
+    <div wire:loading.remove class="vacancy-grid">
         @forelse($vacancies as $v)
         <div class="panel vacancy-card-inner">
             <div style="padding:20px;flex:1">

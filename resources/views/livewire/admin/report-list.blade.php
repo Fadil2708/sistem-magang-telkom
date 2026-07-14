@@ -22,7 +22,18 @@
                     <th>Status</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody wire:loading>
+                @for($i = 0; $i < 5; $i++)
+                <tr>
+                    <td><div class="flex items-center gap-2.5"><div class="skeleton-avatar"></div><div><div class="skeleton-text skeleton-text-lg" style="width:140px"></div><div class="skeleton-text skeleton-text-sm" style="width:180px"></div></div></div></td>
+                    <td><div class="skeleton-text" style="width:200px"></div></td>
+                    <td><div class="skeleton-text skeleton-text-sm" style="width:120px"></div></td>
+                    <td><div class="skeleton-text skeleton-text-sm" style="width:100px"></div></td>
+                    <td><div class="skeleton" style="width:80px;height:22px;border-radius:20px"></div></td>
+                </tr>
+                @endfor
+            </tbody>
+            <tbody wire:loading.remove>
                 @forelse($reports as $report)
                 <tr>
                     <td>

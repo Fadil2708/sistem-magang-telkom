@@ -5,11 +5,11 @@
         <p class="welcome-cta-sub">Daftar sekarang dan temukan posisi magang yang sesuai dengan minat dan bakatmu.</p>
         <div class="welcome-cta-actions">
             @auth
-                <a href="{{ route('public.vacancies') }}" class="btn-primary btn-hero">
+                <a href="{{ route('public.vacancies') }}" class="btn-primary btn-hero btn-cta">
                     <i class="ti ti-briefcase"></i> Lihat Lowongan
                 </a>
             @else
-                <a href="{{ route('register') }}" class="btn-primary btn-hero">
+                <a href="{{ route('register') }}" class="btn-primary btn-hero btn-cta">
                     <i class="ti ti-user-plus"></i> Daftar Sekarang
                 </a>
                 <a href="{{ route('login') }}" class="btn-hero-secondary">

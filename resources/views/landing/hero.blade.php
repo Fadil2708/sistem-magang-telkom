@@ -27,7 +27,7 @@
                         <i class="ti ti-layout-dashboard"></i> Dashboard
                     </a>
                 @else
-                    <a href="{{ route('register') }}" class="btn-primary btn-hero">
+                    <a href="{{ route('register') }}" class="btn-primary btn-hero btn-cta">
                         <i class="ti ti-user-plus"></i> Daftar Sekarang
                     </a>
                     <a href="{{ route('login') }}" class="btn-hero-secondary">

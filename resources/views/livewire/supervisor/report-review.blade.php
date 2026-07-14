@@ -8,7 +8,30 @@
         </div>
     </div>
 
-    <div class="report-list">
+    <div wire:loading class="report-list">
+        @for($i = 0; $i < 3; $i++)
+        <div class="panel report-card">
+            <div class="report-flex">
+                <div class="report-body" style="flex:1">
+                    <div class="report-intern">
+                        <div class="skeleton-avatar"></div>
+                        <div style="flex:1">
+                            <div class="skeleton-text skeleton-text-lg" style="width:180px"></div>
+                            <div class="skeleton-text skeleton-text-sm" style="width:140px;margin-top:4px"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-text" style="width:300px;margin-top:12px"></div>
+                    <div style="display:flex;gap:16px;margin-top:8px">
+                        <div class="skeleton-text skeleton-text-sm" style="width:120px"></div>
+                        <div class="skeleton-text skeleton-text-sm" style="width:80px"></div>
+                    </div>
+                </div>
+                <div><div class="skeleton" style="width:70px;height:22px;border-radius:20px"></div></div>
+            </div>
+        </div>
+        @endfor
+    </div>
+    <div wire:loading.remove class="report-list">
         @forelse($reports as $report)
         <div wire:key="{{ $report->id }}" class="panel report-card status-{{ $report->supervisor_approval }}">
             <div class="report-flex">

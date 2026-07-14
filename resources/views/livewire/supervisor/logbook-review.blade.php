@@ -25,7 +25,32 @@
     </div>
     @endif
 
-    <div style="display:flex;flex-direction:column;gap:16px">
+    <div wire:loading style="display:flex;flex-direction:column;gap:16px">
+        @for($i = 0; $i < 4; $i++)
+        <div class="panel lb-card">
+            <div style="display:flex;align-items:flex-start;gap:12px">
+                <div class="skeleton" style="width:16px;height:16px;border-radius:2px;margin-top:4px;flex-shrink:0"></div>
+                <div style="flex:1">
+                    <div style="display:flex;align-items:flex-start;justify-content:space-between">
+                        <div style="flex:1">
+                            <div class="flex items-center gap-2.5" style="margin-bottom:8px">
+                                <div class="skeleton-avatar"></div>
+                                <div>
+                                    <div class="skeleton-text skeleton-text-lg" style="width:180px"></div>
+                                    <div class="skeleton-text skeleton-text-sm" style="width:140px"></div>
+                                </div>
+                            </div>
+                            <div class="skeleton-text skeleton-text-sm" style="width:160px;margin-bottom:8px"></div>
+                            <div class="skeleton-text" style="width:100%;margin-bottom:4px"></div>
+                            <div class="skeleton-text" style="width:70%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endfor
+    </div>
+    <div wire:loading.remove style="display:flex;flex-direction:column;gap:16px">
         @forelse($logbooks as $logbook)
         <div wire:key="{{ $logbook->id }}" class="panel lb-card">
             <div style="display:flex;align-items:flex-start;gap:12px">

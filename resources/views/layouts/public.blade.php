@@ -212,13 +212,13 @@
 
     @auth
         <div class="mobile-cta">
-            <a href="{{ route('public.vacancies') }}" class="btn-primary">
+            <a href="{{ route('public.vacancies') }}" class="btn-primary btn-cta">
                 <i class="ti ti-briefcase"></i> Lihat Lowongan
             </a>
         </div>
     @else
         <div class="mobile-cta">
-            <a href="{{ route('register') }}" class="btn-primary">
+            <a href="{{ route('register') }}" class="btn-primary btn-cta">
                 <i class="ti ti-user-plus"></i> Daftar Sekarang
             </a>
             <a href="{{ route('login') }}" class="btn-outline-nav" style="flex:1;justify-content:center;padding:12px 18px;font-size:14px;border-radius:12px;text-align:center;">

@@ -48,6 +48,11 @@ export default {
                     c: '#92400E',
                     d: '#991B1B',
                 },
+                accent: {
+                    DEFAULT: '#EA580C',
+                    light: '#FFF7ED',
+                    dark: '#9A3412',
+                },
             },
         },
     },

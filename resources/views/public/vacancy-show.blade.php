@@ -61,7 +61,7 @@
                         <i class="ti ti-x-circle"></i> Kuota Penuh
                     </button>
                 @else
-                    <a href="{{ route('intern.applications.create', $vacancy) }}" class="btn-primary btn-lg">
+                    <a href="{{ route('intern.applications.create', $vacancy) }}" class="btn-primary btn-lg btn-cta">
                         <i class="ti ti-send"></i> Daftar Sekarang
                     </a>
                 @endif
@@ -71,7 +71,7 @@
                 </a>
             @endif
         @else
-            <a href="{{ route('login') }}" class="btn-primary btn-lg">
+            <a href="{{ route('login') }}" class="btn-primary btn-lg btn-cta">
                 <i class="ti ti-login"></i> Masuk untuk Daftar
             </a>
         @endauth

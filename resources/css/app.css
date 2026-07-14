@@ -386,7 +386,7 @@
     border: none;
 }
 .hero-btn-solid:hover {
-    background: #A93226;
+    background: #1D4ED8;
 }
 
 /* ===== STAT CARD ROW ===== */
@@ -990,9 +990,15 @@
         text-decoration: none;
         transition: all 0.15s;
     }
-    .btn-primary:hover { background: #A93226; }
+    .btn-primary:hover { background: #1D4ED8; }
     .btn-primary:active { transform: translateY(0); }
     .btn-primary i { font-size: 14px; }
+
+    .btn-cta {
+        background: #EA580C;
+        box-shadow: 0 4px 16px rgba(234,88,12,0.3);
+    }
+    .btn-cta:hover { background: #C2410C; box-shadow: 0 6px 24px rgba(234,88,12,0.4); }
 
     .btn-danger {
         display: inline-flex;
@@ -1055,7 +1061,7 @@
         box-shadow: 0 2px 8px rgba(37,99,235,0.2);
     }
     .btn-auth:hover {
-        background: #A93226;
+        background: #1D4ED8;
         box-shadow: 0 4px 12px rgba(37,99,235,0.3);
         transform: translateY(-1px);
     }
@@ -1510,7 +1516,7 @@
         cursor: pointer;
         transition: all 0.15s;
     }
-    .btn-save:hover { background: #A93226; }
+    .btn-save:hover { background: #1D4ED8; }
     .btn-save i { font-size: 14px; }
 
     .btn-bar {
@@ -3109,7 +3115,7 @@
     font-weight: 600;
 }
 .cookie-consent-link:hover {
-    color: #A93226;
+    color: #1D4ED8;
 }
 .cookie-consent-actions {
     flex-shrink: 0;
@@ -3344,7 +3350,7 @@
 .error-message { font-size:14px;color:#5C5A55;margin:0 0 8px;line-height:1.6 }
 .error-hint { font-size:13px;color:#A8A5A0;margin:0 0 24px;line-height:1.6 }
 .error-hint a { color:#2563EB;text-decoration:underline;font-weight:600 }
-.error-hint a:hover { color:#A93226 }
+.error-hint a:hover { color:#1D4ED8 }
 .error-actions { display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap }
 
 /* ===== TOAST ===== */
@@ -4074,7 +4080,7 @@ textarea.input { resize: vertical; line-height: 1.6; }
 .bulk-bar .btn-sm-success {
     background: #2563EB;
     color: #fff;
-    border-color: #A93226;
+    border-color: #1D4ED8;
 }
 
 /* ===== FORM WRAP (evaluation form wrapper) ===== */
@@ -4600,7 +4606,7 @@ textarea.input { resize: vertical; line-height: 1.6; }
     transition: background 0.15s;
 }
 .btn-nav:hover {
-    background: #A93226;
+    background: #1D4ED8;
 }
 .btn-outline-nav {
     padding: 7px 16px;
@@ -4702,7 +4708,7 @@ textarea.input { resize: vertical; line-height: 1.6; }
     font-weight: 600;
 }
 .galeri-link:hover {
-    color: #A93226;
+    color: #1D4ED8;
 }
 .galeri-grid {
     display: grid;
@@ -5306,7 +5312,7 @@ textarea.input { resize: vertical; line-height: 1.6; }
     transition: all 0.2s ease;
 }
 .back-to-top:hover {
-    background: #A93226;
+    background: #1D4ED8;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(37,99,235,0.4);
 }
@@ -5552,7 +5558,7 @@ textarea.input { resize: vertical; line-height: 1.6; }
     font-family: inherit;
 }
 .search-filter-btn:hover {
-    background: #A93226;
+    background: #1D4ED8;
 }
 
 /* ===== NAV DROPDOWN ===== */

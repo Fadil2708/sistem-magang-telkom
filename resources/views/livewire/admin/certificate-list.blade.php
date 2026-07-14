@@ -56,7 +56,19 @@
                     <th class="text-right">Aksi</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody wire:loading>
+                @for($i = 0; $i < 5; $i++)
+                <tr>
+                    <td><div><div class="skeleton-text skeleton-text-lg" style="width:140px"></div><div class="skeleton-text skeleton-text-sm" style="width:180px"></div></div></td>
+                    <td><div class="skeleton-text skeleton-text-sm" style="width:130px"></div></td>
+                    <td><div class="skeleton-text skeleton-text-sm" style="width:40px"></div></td>
+                    <td><div class="skeleton" style="width:30px;height:22px;border-radius:4px"></div></td>
+                    <td><div class="skeleton-text skeleton-text-sm" style="width:100px"></div></td>
+                    <td><div class="skeleton" style="width:28px;height:28px;border-radius:6px;margin-left:auto"></div></td>
+                </tr>
+                @endfor
+            </tbody>
+            <tbody wire:loading.remove>
                 @forelse($certificates as $cert)
                 <tr wire:key="cert-{{ $cert->id }}">
                     <td>
