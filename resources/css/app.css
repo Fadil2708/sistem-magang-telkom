@@ -2508,24 +2508,6 @@
         z-index: 1;
         pointer-events: none;
     }
-    .section-dark-wave {
-        position: relative;
-    }
-    .section-dark-wave::before {
-        content: '';
-        position: absolute;
-        top: -1px;
-        left: 0;
-        right: 0;
-        height: 40px;
-        background: #1A0A0A;
-        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 40'%3E%3Cpath d='M0 40C300 20 400 0 600 0S900 20 1200 20V0H0Z'/%3E%3C/svg%3E");
-        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 40'%3E%3Cpath d='M0 40C300 20 400 0 600 0S900 20 1200 20V0H0Z'/%3E%3C/svg%3E");
-        -webkit-mask-size: 100% 100%;
-        mask-size: 100% 100%;
-        z-index: 1;
-        pointer-events: none;
-    }
 
     .welcome-offer {
         max-width: 900px;
