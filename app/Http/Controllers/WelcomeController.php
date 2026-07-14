@@ -7,7 +7,6 @@ use App\Models\Internship;
 use App\Models\Testimonial;
 use App\Models\User;
 use App\Models\Vacancy;
-use Illuminate\Http\Request;
 
 class WelcomeController extends Controller
 {

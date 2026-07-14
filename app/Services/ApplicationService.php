@@ -9,7 +9,6 @@ use App\Models\Internship;
 use App\Models\User;
 use App\Models\Vacancy;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class ApplicationService
 {

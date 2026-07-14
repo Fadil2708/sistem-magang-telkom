@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Supervisor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Internship;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class InternController extends Controller

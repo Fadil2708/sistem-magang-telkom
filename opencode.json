@@ -1,3 +1,11 @@
 {
-  "$schema": "https://opencode.ai/config.json"
+  "$schema": "https://opencode.ai/config.json",
+  "compaction": {
+    "auto": true,
+    "tail_turns": 10
+  },
+  "tool_output": {
+    "max_lines": 100,
+    "max_bytes": 4096
+  }
 }
