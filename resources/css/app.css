@@ -38,20 +38,20 @@
 }
 
 .dark {
-    --surface: 15 23 42;
-    --panel-bg: 30 41 59;
-    --panel-border: 51 65 85;
-    --body-bg: 2 6 23;
+    --surface: 26 10 10;
+    --panel-bg: 45 15 15;
+    --panel-border: 61 26 26;
+    --body-bg: 5 0 5;
 
     --text-primary: 248 250 252;
     --text-secondary: 203 213 225;
     --text-muted: 148 163 184;
     --text-light: 71 85 105;
 
-    --input-bg: 15 23 42;
-    --hover-bg: 30 41 59;
-    --skeleton-base: 30 41 59;
-    --skeleton-shift: 51 65 85;
+    --input-bg: 26 10 10;
+    --hover-bg: 45 15 15;
+    --skeleton-base: 45 15 15;
+    --skeleton-shift: 61 26 26;
 
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.2), 0 1px 3px rgb(0 0 0 / 0.25);
     --shadow-md: 0 2px 4px rgb(0 0 0 / 0.2), 0 4px 12px rgb(0 0 0 / 0.3);
@@ -120,7 +120,7 @@
 
     /* ===== ALERT BAR ===== */
     .alert-bar {
-        background: linear-gradient(135deg, #0F172A, #1E293B);
+        background: linear-gradient(135deg, #1A0A0A, #2D0F0F);
         border-bottom: 1px solid rgba(255,255,255,0.06);
         position: relative;
         z-index: 51;
@@ -201,7 +201,7 @@
     /* ===== SIDEBAR ===== */
     .sidebar {
         width: 220px;
-        background: #0F172A;
+        background: #1A0A0A;
         display: flex;
         flex-direction: column;
         position: fixed;
@@ -380,7 +380,7 @@
     .topbar-chevron { font-size: 12px; color: rgb(var(--text-light)); transition: transform var(--transition-base); }
 /* ===== HERO CARD (intern dashboard) ===== */
 .hero-card {
-    background: linear-gradient(135deg, #0F172A, #1E293B);
+    background: linear-gradient(135deg, #1A0A0A, #2D0F0F);
     border-radius: 13px;
     padding: 24px;
     margin-bottom: 16px;
@@ -477,7 +477,7 @@
 
 /* ===== DETAIL HEADER (internship/application) ===== */
 .detail-header {
-    background: linear-gradient(135deg, #0F172A, #1E293B);
+    background: linear-gradient(135deg, #1A0A0A, #2D0F0F);
     padding: 20px 24px;
 }
 .detail-header-row {
@@ -1208,7 +1208,7 @@
     }
     .auth-brand {
         flex: 0 0 45%;
-        background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+        background: linear-gradient(135deg, #1A0A0A 0%, #2D0F0F 100%);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -1905,7 +1905,7 @@
 
     /* ===== CERTIFICATE CARD ===== */
     .cert-preview-card {
-        background: linear-gradient(135deg, #0F172A, #1E293B, #0F172A);
+        background: linear-gradient(135deg, #1A0A0A, #2D0F0F, #1A0A0A);
         border-radius: 16px; max-width: 480px;
         border: 1px solid rgba(255,255,255,0.06);
         overflow: hidden;
@@ -2208,7 +2208,7 @@
         line-height: 1;
     }
     .public-footer {
-        background: #0F172A;
+        background: #1A0A0A;
         color: rgba(255,255,255,0.55);
         font-size: 13px;
     }
@@ -2344,7 +2344,7 @@
     /* ===== WELCOME HERO ===== */
     .welcome-hero {
         position: relative;
-        background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+        background: linear-gradient(135deg, #1A0A0A 0%, #2D0F0F 50%, #1A0A0A 100%);
         padding: 60px 20px;
         overflow: hidden;
     }
@@ -2556,7 +2556,7 @@
         left: 0;
         right: 0;
         height: 40px;
-        background: #0F172A;
+        background: #1A0A0A;
         -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 40'%3E%3Cpath d='M0 40C300 20 400 0 600 0S900 20 1200 20V0H0Z'/%3E%3C/svg%3E");
         mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 40'%3E%3Cpath d='M0 40C300 20 400 0 600 0S900 20 1200 20V0H0Z'/%3E%3C/svg%3E");
         -webkit-mask-size: 100% 100%;
@@ -3335,7 +3335,7 @@
 .back-link { font-size:13px;color:#5C5A55;text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-bottom:24px }
 .back-link:hover { color:#312F2D }
 
-.vacancy-header { background:linear-gradient(135deg,#0F172A,#1E293B);padding:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px }
+.vacancy-header { background:linear-gradient(135deg,#1A0A0A,#2D0F0F);padding:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px }
 .vacancy-header-text h1 { font-size:20px;font-weight:700;color:#fff;margin:0 0 4px }
 .vacancy-header-text p { font-size:13px;color:rgba(255,255,255,0.55);margin:0 }
 .vacancy-body { padding:24px }
@@ -3384,7 +3384,7 @@
 .vac-card-deadline { font-size:12px;color:#A8A5A0 }
 
 /* Vacancy hero */
-.vac-hero { background:linear-gradient(135deg,#0F172A,#1E293B);border-radius:16px;padding:40px 32px;margin-bottom:20px;text-align:center }
+.vac-hero { background:linear-gradient(135deg,#1A0A0A,#2D0F0F);border-radius:16px;padding:40px 32px;margin-bottom:20px;text-align:center }
 .vac-hero-title { font-size:28px;font-weight:700;color:#fff;margin:0 0 6px }
 .vac-hero-sub { font-size:14px;color:rgba(255,255,255,.55);margin:0 0 24px }
 
@@ -3485,14 +3485,14 @@
 .toast-error   .toast-icon { color:#DC2626 }
 .toast-warning .toast-icon { color:#D97706 }
 .toast-info    .toast-icon { color:#E05A4A }
-.toast-msg { font-size:14px;font-weight:500;flex:1;margin:0;line-height:1.4;color:#0F172A }
+.toast-msg { font-size:14px;font-weight:500;flex:1;margin:0;line-height:1.4;color:#1A0A0A }
 .toast-close {
     border: none; background: none; cursor: pointer;
     color: #999; padding: 2px; flex-shrink: 0;
     opacity: 0.6; font-size:18px; line-height:1;
     transition: opacity 0.15s;
 }
-.toast-close:hover { opacity:1; color:#0F172A }
+.toast-close:hover { opacity:1; color:#1A0A0A }
 
 /* responsive: mobile */
 @media (max-width: 600px) {
@@ -5226,7 +5226,7 @@ textarea.input { resize: vertical; line-height: 1.6; }
     padding: 20px 16px 60px;
 }
 .welcome-cta-card {
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 40%, #0F172A 100%);
+    background: linear-gradient(135deg, #1A0A0A 0%, #2D0F0F 40%, #1A0A0A 100%);
     border-radius: 20px;
     padding: 56px 40px;
     text-align: center;
@@ -5713,7 +5713,7 @@ textarea.input { resize: vertical; line-height: 1.6; }
 }
 .nav-dropdown-item:hover {
         background: #F8FAFC;
-        color: #334155;
+        color: #3D1A1A;
 }
 .nav-dropdown-trigger {
     display: inline-flex;

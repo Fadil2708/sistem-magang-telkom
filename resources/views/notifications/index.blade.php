@@ -69,7 +69,7 @@
     transition: background 0.1s;
 }
 .notif-page-item:last-child { border-bottom: none; }
-.notif-page-item-unread { background: #EFF6FF; }
+.notif-page-item-unread { background: #F9EAE8; }
 .notif-page-item:hover { background: #F5F4F2; }
 .notif-page-link {
     display: flex; gap: 12px; padding: 14px 16px;
@@ -90,7 +90,7 @@
     font-size: 12px; color: #A8A5A0; margin-top: 2px;
 }
 .notif-page-time {
-    font-size: 11px; color: #2563EB; margin-top: 4px;
+    font-size: 11px; color: #C0392B; margin-top: 4px;
 }
 .notif-page-dot {
     width: 8px; height: 8px; border-radius: 50%;

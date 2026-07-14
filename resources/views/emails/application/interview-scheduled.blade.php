@@ -1,7 +1,7 @@
 @extends('emails.layouts.email')
 
 @section('content')
-    <h2 style="color:#2563eb">Jadwal Wawancara</h2>
+    <h2 style="color:#C0392B">Jadwal Wawancara</h2>
     <p>Halo <strong>{{ $intern_name }}</strong>,</p>
     <p>Selamat! Anda telah dijadwalkan untuk wawancara untuk posisi <strong>{{ $vacancy_title }}</strong>.</p>
 

@@ -8,7 +8,7 @@
 
 @if($photo)
     <img src="{{ Storage::url($photo) }}" loading="lazy" width="{{ $size }}" height="{{ $size }}"
-         style="width:{{ $size }}px;height:{{ $size }}px;border-radius:50%;object-fit:cover;border:2px solid #EFF6FF">
+         style="width:{{ $size }}px;height:{{ $size }}px;border-radius:50%;object-fit:cover;border:2px solid #F9EAE8">
 @else
     <div class="av {{ $type }}" style="width:{{ $size }}px;height:{{ $size }}px;font-size:{{ $fs }}px">{{ $initial }}</div>
 @endif

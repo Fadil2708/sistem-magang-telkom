@@ -133,10 +133,10 @@
         <div class="flex flex-col gap-3">
             <div>
                 <div class="flex-between mb-1">
-                    <span class="chart-legend"><span class="chart-legend-dot" style="background:#2563EB"></span> Aktif</span>
+                    <span class="chart-legend"><span class="chart-legend-dot" style="background:#C0392B"></span> Aktif</span>
                     <span class="text-caption">{{ $totalInternsActive }} ({{ $activePct }}%)</span>
                 </div>
-                <div class="chart-hbar-track"><div class="chart-hbar" style="width:{{ $activePct }}%;background:#2563EB"></div></div>
+                <div class="chart-hbar-track"><div class="chart-hbar" style="width:{{ $activePct }}%;background:#C0392B"></div></div>
             </div>
             <div>
                 <div class="flex-between mb-1">

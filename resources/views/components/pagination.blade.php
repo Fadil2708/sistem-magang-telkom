@@ -19,7 +19,7 @@
                 <a href="{{ url($url) }}" wire:key="page-{{ $page }}"
                    style="min-width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;text-decoration:none;transition:all 0.15s;
                     {{ $page === $paginator->currentPage()
-                         ? 'background:#2563EB;color:#fff'
+                         ? 'background:#C0392B;color:#fff'
                         : 'background:#F5F4F2;color:#5C5A55;border:1px solid #E8E6E1' }}">
                     {{ $page }}
                 </a>

@@ -29,9 +29,9 @@
                         <div class="prog-wrap"><div class="prog-bar" style="width:{{ $eva->soft_skill_score }}%;background:#DC2626"></div></div>
                     </div>
                     <div class="score-item">
-                        <div class="score-val" style="color:#2563EB;font-size:20px">{{ number_format($eva->hard_skill_score, 0) }}</div>
+                        <div class="score-val" style="color:#C0392B;font-size:20px">{{ number_format($eva->hard_skill_score, 0) }}</div>
                         <div class="score-lbl">Hard Skill</div>
-                        <div class="prog-wrap"><div class="prog-bar" style="width:{{ $eva->hard_skill_score }}%;background:#2563EB"></div></div>
+                        <div class="prog-wrap"><div class="prog-bar" style="width:{{ $eva->hard_skill_score }}%;background:#C0392B"></div></div>
                     </div>
                     <div class="score-item">
                         <div class="score-val" style="color:#16A34A;font-size:20px">{{ number_format($eva->attendance_score, 0) }}</div>

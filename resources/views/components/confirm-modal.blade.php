@@ -15,14 +15,14 @@ aria-modal="true">
             </button>
         </div>
         <div class="modal-body" style="padding:32px 24px">
-            <div style="font-size:48px;color:#2563EB;margin-bottom:16px">
+            <div style="font-size:48px;color:#C0392B;margin-bottom:16px">
                 <i class="ti ti-alert-triangle"></i>
             </div>
             <p style="font-size:15px;line-height:1.6;color:#333" x-text="message"></p>
         </div>
         <div class="modal-footer" style="justify-content:center;gap:12px">
             <button @click="open = false" class="btn-secondary">Batal</button>
-            <button @click="confirm" class="btn-save" style="background:#2563EB;min-width:140px">
+            <button @click="confirm" class="btn-save" style="background:#C0392B;min-width:140px">
                 Ya, lanjutkan
             </button>
         </div>

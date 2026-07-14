@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="offer-slide-content">
-                <h2 class="welcome-section-title">Apa yang <span style="color:#2563EB">Telkom</span> Tawarkan untuk Kamu?</h2>
+                <h2 class="welcome-section-title">Apa yang <span style="color:#C0392B">Telkom</span> Tawarkan untuk Kamu?</h2>
                 <p class="welcome-section-sub">Alat untuk Mendapatkan Pengalaman Magang Impian Kamu. Temukan peluang magangmu dengan mudah. Buka pintu kariermu sekarang!</p>
                 <h3 class="offer-slide-title" x-text="slides[current].label"></h3>
                 <hr>

@@ -17,7 +17,7 @@
         .content-body .info-box p { margin: 4px 0; font-size: 13px; color: #4b5563; }
         .content-body .info-box strong { color: #111827; }
         .content-body .info-green { background: #f0fdf4; border-left-color: #16a34a; }
-        .content-body .info-blue { background: #eff6ff; border-left-color: #2563eb; }
+        .content-body .info-blue { background: #F9EAE8; border-left-color: #C0392B; }
         .content-body .info-amber { background: #fffbeb; border-left-color: #d97706; }
         .btn-wrap { text-align: center; margin: 24px 0; }
         .btn { display: inline-block; padding: 12px 28px; background: #dc2626; color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600; box-shadow: 0 2px 6px rgba(220,38,38,0.25); transition: background 0.2s, box-shadow 0.2s; }

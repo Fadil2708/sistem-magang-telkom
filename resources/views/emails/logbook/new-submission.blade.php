@@ -1,7 +1,7 @@
 @extends('emails.layouts.email')
 
 @section('content')
-    <h2 style="color:#2563eb">Logbook Baru dari Peserta</h2>
+    <h2 style="color:#C0392B">Logbook Baru dari Peserta</h2>
     <p>Halo <strong>{{ $supervisor_name }}</strong>,</p>
     <p>Peserta <strong>{{ $intern_name }}</strong> telah mengirimkan logbook baru untuk ditinjau.</p>
 

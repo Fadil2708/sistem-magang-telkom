@@ -19,7 +19,7 @@
                 <div style="margin-top:8px">
                     <p style="font-size:13px;color:#1E1C1A">
                         {{ __('Your email address is unverified.') }}
-                        <button form="send-verification" style="color:#2563EB;text-decoration:underline;font-size:13px">
+                        <button form="send-verification" style="color:#C0392B;text-decoration:underline;font-size:13px">
                             {{ __('Click here to re-send the verification email.') }}
                         </button>
                     </p>
