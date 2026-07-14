@@ -19,6 +19,21 @@
 
     <div class="topbar-right">
         <livewire:notification-bell key="notif-bell-{{ auth()->id() }}" />
+        <button x-data="{ dark: false }"
+                x-init="
+                    let stored = localStorage.getItem('dark');
+                    if (stored === 'true') { document.documentElement.classList.add('dark'); dark = true; }
+                    else if (stored !== 'false' && window.matchMedia('(prefers-color-scheme: dark)').matches) { document.documentElement.classList.add('dark'); dark = true; }
+                "
+                @click="
+                    dark = !dark;
+                    document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('dark', dark);
+                "
+                class="theme-toggle" aria-label="Toggle dark mode">
+            <i x-show="!dark" class="ti ti-moon"></i>
+            <i x-show="dark" class="ti ti-sun"></i>
+        </button>
         <div @click.outside="dropOpen = false" class="topbar-dropdown-wrap">
             <button @click="dropOpen = !dropOpen"
                     class="topbar-user-btn"

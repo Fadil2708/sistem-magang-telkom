@@ -195,6 +195,7 @@
     .dash-body {
         padding: 16px 20px 32px;
         flex: 1;
+        transition: background var(--transition-base);
     }
 
     /* ===== SIDEBAR ===== */
@@ -299,8 +300,9 @@
         align-items: center;
         justify-content: space-between;
         padding: 12px 20px;
-        background: #fff;
-        border-bottom: 1px solid #E8E6E1;
+        background: rgb(var(--panel-bg));
+        border-bottom: 1px solid rgb(var(--panel-border));
+        transition: background var(--transition-fast), border-color var(--transition-fast);
         position: sticky;
         top: 0;
         z-index: 30;
@@ -315,7 +317,7 @@
     .topbar-title {
         font-size: 16px;
         font-weight: 700;
-        color: #1E1C1A;
+        color: rgb(var(--text-primary));
     }
     .topbar-right {
         display: flex;
@@ -335,11 +337,28 @@
         display: flex; align-items: center; gap: 8px;
         padding: 4px 10px 4px 4px; border-radius: 8px;
         border: none; background: none;
-        font-family: inherit; cursor: pointer; color: #312F2D;
-        transition: background 0.1s;
+        font-family: inherit; cursor: pointer; color: rgb(var(--text-secondary));
+        transition: background var(--transition-fast);
     }
     .topbar-user-btn:hover,
-    .topbar-user-btn-open { background: #F5F4F2; }
+    .topbar-user-btn-open { background: rgb(var(--hover-bg)); }
+
+    .theme-toggle {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 32px; height: 32px; border-radius: var(--radius-sm);
+        border: none; background: none;
+        font-size: 16px; cursor: pointer;
+        color: rgb(var(--text-muted));
+        transition: all var(--transition-fast);
+        flex-shrink: 0;
+    }
+    .theme-toggle:hover {
+        background: rgb(var(--hover-bg));
+        color: rgb(var(--accent) / 1);
+    }
+    .dark .theme-toggle:hover {
+        color: #FBBF24;
+    }
     .topbar-avatar {
         width: 28px; height: 28px; border-radius: 50%;
         background: #EFF6FF; color: #2563EB;
