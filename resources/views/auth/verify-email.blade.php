@@ -25,16 +25,22 @@
     </div>
 
     <div style="display:flex;gap:12px;margin-top:24px">
-        <form method="POST" action="{{ route('verification.send') }}" style="flex:1">
+        <form method="POST" action="{{ route('verification.send') }}" style="flex:1"
+              x-data="{ loading: false }" @submit="loading = true">
             @csrf
-            <button type="submit" class="btn-primary btn-full" style="padding:10px;font-size:13px">
-                <i class="ti ti-send"></i> Kirim Ulang
+            <button type="submit" class="btn-primary btn-full" style="padding:10px;font-size:13px"
+                    :disabled="loading" :class="loading && 'opacity-60 cursor-wait'">
+                <template x-if="!loading"><span><i class="ti ti-send"></i> Kirim Ulang</span></template>
+                <template x-if="loading"><span><i class="ti ti-loader" style="animation:spin 1s linear infinite"></i> Mengirim...</span></template>
             </button>
         </form>
-        <form method="POST" action="{{ route('logout') }}">
+        <form method="POST" action="{{ route('logout') }}"
+              x-data="{ loading: false }" @submit="loading = true">
             @csrf
-            <button type="submit" class="btn-secondary" style="padding:10px 16px;font-size:13px">
-                <i class="ti ti-logout"></i> Keluar
+            <button type="submit" class="btn-secondary" style="padding:10px 16px;font-size:13px"
+                    :disabled="loading" :class="loading && 'opacity-60 cursor-wait'">
+                <template x-if="!loading"><span><i class="ti ti-logout"></i> Keluar</span></template>
+                <template x-if="loading"><span><i class="ti ti-loader" style="animation:spin 1s linear infinite"></i> Memproses...</span></template>
             </button>
         </form>
     </div>

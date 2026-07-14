@@ -16,7 +16,7 @@
     </div>
 
     <div class="panel" style="overflow-x:auto">
-        <div style="background:linear-gradient(135deg,#1A0A0A,#2D0F0F);padding:20px;text-align:center">
+        <div style="background:linear-gradient(135deg,#0F172A,#1E293B);padding:20px;text-align:center">
             <div style="font-size:20px;font-weight:700;color:#fff">
                 {{ $certificate->intern->internProfile->full_name ?? $certificate->intern->email ?? '—' }}
             </div>

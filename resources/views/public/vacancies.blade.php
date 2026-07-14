@@ -8,7 +8,8 @@
             <h1 class="vac-hero-title">Temukan Magang Impianmu</h1>
             <p class="vac-hero-sub">Jelajahi lowongan magang & PKL dari berbagai divisi di Telkom Sukabumi</p>
         </div>
-        <form class="vac-search-form" method="GET" action="{{ route('public.vacancies') }}">
+        <form class="vac-search-form" method="GET" action="{{ route('public.vacancies') }}"
+              x-data="{ loading: false }" @submit="loading = true">
             <div class="vac-search-wrap">
                 <i class="ti ti-search vac-search-icon"></i>
                 <input type="text" name="search" class="vac-search-input"
@@ -20,7 +21,11 @@
                         <option value="{{ $div }}" {{ request('division') === $div ? 'selected' : '' }}>{{ $div }}</option>
                     @endforeach
                 </select>
-                <button type="submit" class="vac-search-btn">Cari</button>
+                <button type="submit" class="vac-search-btn"
+                        :disabled="loading" :class="loading && 'opacity-60 cursor-wait'">
+                    <template x-if="!loading">Cari</template>
+                    <template x-if="loading">Mencari...</template>
+                </button>
                 @if(request('search') || request('division'))
                     <a href="{{ route('public.vacancies') }}" class="vac-search-reset">
                         <i class="ti ti-x"></i>

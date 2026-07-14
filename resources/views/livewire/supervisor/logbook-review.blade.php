@@ -31,7 +31,7 @@
             <div style="display:flex;align-items:flex-start;gap:12px">
                 @if($logbook->validation_status === 'submitted')
                 <input type="checkbox" x-model="selected" value="{{ $logbook->id }}"
-                       style="width:16px;height:16px;accent-color:#C0392B;margin-top:4px;flex-shrink:0">
+                       style="width:16px;height:16px;accent-color:#2563EB;margin-top:4px;flex-shrink:0">
                 @endif
                 <div style="flex:1">
                     <div style="display:flex;align-items:flex-start;justify-content:space-between">

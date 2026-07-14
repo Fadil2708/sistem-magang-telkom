@@ -193,7 +193,7 @@
         <hr class="public-footer-divider">
         <div class="public-footer-bottom">
             <span>&copy; {{ date('Y') }} Telkom Indonesia &middot; Sukabumi</span>
-            <span>Dibangun dengan <i class="ti ti-heart-filled" style="color:#C0392B"></i> oleh Tim IT Telkom Sukabumi</span>
+            <span>Dibangun dengan <i class="ti ti-heart-filled" style="color:#2563EB"></i> oleh Tim IT Telkom Sukabumi</span>
         </div>
     </footer>
 

@@ -9,10 +9,13 @@
         <p class="page-sub">Semua notifikasi akun Anda</p>
     </div>
     @if(auth()->user()->unreadNotifications->isNotEmpty())
-        <form method="POST" action="{{ route('notifications.read-all') }}">
+        <form method="POST" action="{{ route('notifications.read-all') }}"
+              x-data="{ loading: false }" @submit="loading = true">
             @csrf
-            <button type="submit" class="btn-secondary btn-sm">
-                <i class="ti ti-check"></i> Tandai semua dibaca
+            <button type="submit" class="btn-secondary btn-sm"
+                    :disabled="loading" :class="loading && 'opacity-60 cursor-wait'">
+                <template x-if="!loading"><span><i class="ti ti-check"></i> Tandai semua dibaca</span></template>
+                <template x-if="loading"><span><i class="ti ti-loader" style="animation:spin 1s linear infinite"></i> Memproses...</span></template>
             </button>
         </form>
     @endif
@@ -66,7 +69,7 @@
     transition: background 0.1s;
 }
 .notif-page-item:last-child { border-bottom: none; }
-.notif-page-item-unread { background: #FEF9F8; }
+.notif-page-item-unread { background: #EFF6FF; }
 .notif-page-item:hover { background: #F5F4F2; }
 .notif-page-link {
     display: flex; gap: 12px; padding: 14px 16px;
@@ -87,7 +90,7 @@
     font-size: 12px; color: #A8A5A0; margin-top: 2px;
 }
 .notif-page-time {
-    font-size: 11px; color: #C0392B; margin-top: 4px;
+    font-size: 11px; color: #2563EB; margin-top: 4px;
 }
 .notif-page-dot {
     width: 8px; height: 8px; border-radius: 50%;
