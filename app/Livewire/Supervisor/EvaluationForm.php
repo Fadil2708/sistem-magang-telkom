@@ -107,17 +107,12 @@ class EvaluationForm extends Component
             return;
         }
 
-        $s = (float) $this->soft_skill_score;
-        $h = (float) $this->hard_skill_score;
-        $att = (float) $this->attendance_score;
-        $ati = (float) $this->attitude_score;
-        $finalScore = ($s * 0.25) + ($h * 0.35) + ($att * 0.20) + ($ati * 0.20);
-        $grade = match (true) {
-            $finalScore >= 85 => 'A',
-            $finalScore >= 70 => 'B',
-            $finalScore >= 55 => 'C',
-            default           => 'D',
-        };
+        $evaluation = new Evaluation();
+        $evaluation->soft_skill_score = $s;
+        $evaluation->hard_skill_score = $h;
+        $evaluation->attendance_score = $att;
+        $evaluation->attitude_score = $ati;
+        $evaluation->calculateFinalScore();
 
         $data = [
             'internship_id' => $this->internship->id,
@@ -126,8 +121,8 @@ class EvaluationForm extends Component
             'hard_skill_score' => $h,
             'attendance_score' => $att,
             'attitude_score' => $ati,
-            'final_score' => $finalScore,
-            'grade' => $grade,
+            'final_score' => $evaluation->final_score,
+            'grade' => $evaluation->grade,
             'remarks' => $this->remarks ?: null,
         ];
 
@@ -137,7 +132,7 @@ class EvaluationForm extends Component
         );
 
         $this->evaluation = $evaluation->fresh();
-        $this->toast('Penilaian berhasil disimpan. Nilai akhir: ' . number_format($finalScore, 0) . ' (Grade: ' . $grade . ')', 'success');
+        $this->toast('Penilaian berhasil disimpan. Nilai akhir: ' . number_format($evaluation->final_score, 0) . ' (Grade: ' . $evaluation->grade . ')', 'success');
     }
 
     public function render()

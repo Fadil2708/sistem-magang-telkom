@@ -5,6 +5,7 @@ namespace App\Livewire\Intern;
 use App\Models\Vacancy;
 use App\Notifications\ApplicationNotification;
 use App\Services\ApplicationService;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class ApplicationForm extends Component
@@ -50,6 +51,7 @@ class ApplicationForm extends Component
             $this->errorMessage = null;
             session()->flash('success', 'Lamaran berhasil dikirim!');
         } catch (\Exception $e) {
+            Log::warning("[ApplicationForm] apply error: {$e->getMessage()}");
             $this->errorMessage = $e->getMessage();
         }
     }

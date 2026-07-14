@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Internship;
 use App\Services\EvaluationService;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -42,6 +43,7 @@ class InternshipList extends Component
             $service->lock($internship->evaluation);
             $this->dispatch('toast', message: 'Penilaian berhasil dikunci.', type: 'success');
         } catch (\Exception $e) {
+            Log::warning("[InternshipList] lock error: {$e->getMessage()}");
             $this->dispatch('toast', message: $e->getMessage(), type: 'error');
         }
 

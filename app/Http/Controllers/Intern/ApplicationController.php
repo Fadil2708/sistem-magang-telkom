@@ -9,6 +9,7 @@ use App\Services\ApplicationService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class ApplicationController extends Controller
@@ -34,6 +35,7 @@ class ApplicationController extends Controller
             $application = $service->apply(auth()->user(), $request->vacancy_id);
             return $this->created(new ApplicationResource($application), 'Lamaran berhasil dikirim');
         } catch (\Exception $e) {
+            Log::warning("[API] ApplicationController::store: {$e->getMessage()}");
             return $this->error($e->getMessage(), 422);
         }
     }
@@ -58,6 +60,7 @@ class ApplicationController extends Controller
             $service->cancel($application);
             return $this->success(null, 'Lamaran berhasil dibatalkan');
         } catch (\Exception $e) {
+            Log::warning("[API] ApplicationController::cancel: {$e->getMessage()}");
             return $this->error($e->getMessage(), 422);
         }
     }

@@ -5,6 +5,7 @@ namespace App\Livewire\Supervisor;
 use App\Models\Logbook;
 use App\Notifications\LogbookNotification;
 use App\Services\LogbookService;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -62,6 +63,7 @@ class LogbookReview extends Component
             $logbook->intern->notify(new LogbookNotification($logbook, 'approved'));
             $this->toast('Logbook berhasil disetujui.', 'success');
         } catch (\Exception $e) {
+            Log::warning("[LogbookReview] approve error: {$e->getMessage()}");
             $this->toast($e->getMessage(), 'error');
         }
     }
@@ -82,25 +84,27 @@ class LogbookReview extends Component
             return;
         }
 
-        $approved = 0;
-        $errors = 0;
+        $updated = Logbook::whereIn('id', $this->selectedLogbooks)
+            ->where('validation_status', 'submitted')
+            ->update(['validation_status' => 'approved', 'reviewed_at' => now(), 'reviewer_id' => auth()->id()]);
 
-        $logbooks = Logbook::whereIn('id', $this->selectedLogbooks)->get();
+        $logbooks = Logbook::whereIn('id', $this->selectedLogbooks)
+            ->where('validation_status', 'approved')
+            ->with('intern')
+            ->get();
 
         foreach ($logbooks as $logbook) {
             try {
-                $this->logbookService->review($logbook, auth()->user(), 'approved');
                 $logbook->intern->notify(new LogbookNotification($logbook, 'approved'));
-                $approved++;
             } catch (\Exception $e) {
-                $errors++;
+                Log::error("[LogbookReview] bulkApprove notif error: {$e->getMessage()}");
             }
         }
 
         $this->selectedLogbooks = [];
 
-        if ($approved > 0) {
-            $this->toast("{$approved} logbook berhasil disetujui." . ($errors > 0 ? " {$errors} gagal." : ''), 'success');
+        if ($updated > 0) {
+            $this->toast("{$updated} logbook berhasil disetujui.", 'success');
         } else {
             $this->toast('Tidak ada logbook yang bisa disetujui.', 'error');
         }
@@ -124,6 +128,7 @@ class LogbookReview extends Component
             $this->showRevisionModal = false;
             $this->toast('Revisi logbook telah diminta.', 'success');
         } catch (\Exception $e) {
+            Log::warning("[LogbookReview] requestRevision error: {$e->getMessage()}");
             $this->toast($e->getMessage(), 'error');
             $this->showRevisionModal = false;
         }

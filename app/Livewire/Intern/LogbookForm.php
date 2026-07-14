@@ -5,6 +5,7 @@ namespace App\Livewire\Intern;
 use App\Models\Internship;
 use App\Models\Logbook;
 use App\Services\LogbookService;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class LogbookForm extends Component
@@ -88,6 +89,7 @@ class LogbookForm extends Component
                 session()->flash('success', 'Logbook berhasil dibuat.');
             }
         } catch (\Exception $e) {
+            Log::warning("[LogbookForm] save error: {$e->getMessage()}");
             $this->addError('activity_date', $e->getMessage());
             return;
         }
