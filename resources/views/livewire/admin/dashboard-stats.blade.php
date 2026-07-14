@@ -102,3 +102,63 @@
     </div>
     </div>
 </div>
+
+{{-- Monthly Trend Chart --}}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-5" wire:loading.remove>
+    <div class="panel p-4 lg:col-span-2">
+        <div class="flex-between mb-3">
+            <h3 class="text-h4">Tren Lamaran (6 Bulan)</h3>
+            <span class="text-caption">Total: {{ array_sum($monthlyApplications) }} lamaran</span>
+        </div>
+        @php $maxVal = max(1, max($monthlyApplications)); @endphp
+        <div class="chart-bar-group">
+            @foreach($monthlyLabels as $idx => $label)
+            <div class="chart-bar-wrap">
+                <span class="chart-bar-value">{{ $monthlyApplications[$idx] }}</span>
+                <div class="chart-bar" style="height: {{ max(4, ($monthlyApplications[$idx] / $maxVal) * 100) }}%"></div>
+                <span class="chart-bar-label">{{ $label }}</span>
+            </div>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="panel p-4">
+        <h3 class="text-h4 mb-3">Status Magang</h3>
+        @php
+            $totalStat = max(1, $totalInternships);
+            $activePct = round(($totalInternsActive / $totalStat) * 100);
+            $completedPct = round(($completedInternships / $totalStat) * 100);
+            $terminatedPct = round(($terminatedInternships / $totalStat) * 100);
+        @endphp
+        <div class="flex flex-col gap-3">
+            <div>
+                <div class="flex-between mb-1">
+                    <span class="chart-legend"><span class="chart-legend-dot" style="background:#2563EB"></span> Aktif</span>
+                    <span class="text-caption">{{ $totalInternsActive }} ({{ $activePct }}%)</span>
+                </div>
+                <div class="chart-hbar-track"><div class="chart-hbar" style="width:{{ $activePct }}%;background:#2563EB"></div></div>
+            </div>
+            <div>
+                <div class="flex-between mb-1">
+                    <span class="chart-legend"><span class="chart-legend-dot" style="background:#16A34A"></span> Selesai</span>
+                    <span class="text-caption">{{ $completedInternships }} ({{ $completedPct }}%)</span>
+                </div>
+                <div class="chart-hbar-track"><div class="chart-hbar" style="width:{{ $completedPct }}%;background:#16A34A"></div></div>
+            </div>
+            <div>
+                <div class="flex-between mb-1">
+                    <span class="chart-legend"><span class="chart-legend-dot" style="background:#DC2626"></span> Terminasi</span>
+                    <span class="text-caption">{{ $terminatedInternships }} ({{ $terminatedPct }}%)</span>
+                </div>
+                <div class="chart-hbar-track"><div class="chart-hbar" style="width:{{ $terminatedPct }}%;background:#DC2626"></div></div>
+            </div>
+        </div>
+        <div class="mt-4 pt-3" style="border-top:1px solid #E2E8F0">
+            <div class="flex-between mb-1">
+                <span class="chart-legend"><span class="chart-legend-dot" style="background:#F59E0B"></span> Kuota Terisi</span>
+                <span class="text-caption">{{ $quotaUsed }} / {{ $quotaTotal }}</span>
+            </div>
+            <div class="chart-hbar-track"><div class="chart-hbar" style="width:{{ $quotaTotal > 0 ? min(round(($quotaUsed / $quotaTotal) * 100), 100) : 0 }}%;background:#F59E0B"></div></div>
+        </div>
+    </div>
+</div>

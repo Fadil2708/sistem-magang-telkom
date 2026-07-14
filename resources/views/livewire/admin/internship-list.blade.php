@@ -17,7 +17,7 @@
         });
     @endphp
 
-    <div class="panel" style="overflow-x:auto">
+    <div class="panel overflow-x-auto">
         <table class="data">
             <thead>
                 <tr>

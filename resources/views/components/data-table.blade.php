@@ -6,7 +6,7 @@
 ])
 
 <div class="panel">
-    <div style="overflow-x:auto">
+    <div class="overflow-x-auto">
     <table class="data">
         <thead>
             <tr>
