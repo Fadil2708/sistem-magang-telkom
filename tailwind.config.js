@@ -18,9 +18,9 @@ export default {
             },
             colors: {
                 brand: {
-                    DEFAULT: '#2563EB',
-                    light: '#EFF6FF',
-                    dark: '#1E3A5F',
+                    DEFAULT: '#C0392B',
+                    light: '#F9EAE8',
+                    dark: '#7F1D1D',
                 },
                 surface: {
                     DEFAULT: '#F8FAFC',
@@ -37,14 +37,14 @@ export default {
                     light: '#CBD5E1',
                 },
                 status: {
-                    blue: '#3B82F6',
+                    brand: '#E05A4A',
                     amber: '#D97706',
                     green: '#16A34A',
                     red: '#DC2626',
                 },
                 grade: {
                     a: '#065F46',
-                    b: '#1E40AF',
+                    b: '#992B24',
                     c: '#92400E',
                     d: '#991B1B',
                 },
