@@ -13,27 +13,28 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['DM Sans', ...defaultTheme.fontFamily.sans],
+                sans: ['Open Sans', ...defaultTheme.fontFamily.sans],
+                heading: ['Poppins', 'sans-serif'],
             },
             colors: {
                 brand: {
-                    DEFAULT: '#C0392B',
-                    light: '#F9EAE8',
-                    dark: '#1A0A0A',
+                    DEFAULT: '#2563EB',
+                    light: '#EFF6FF',
+                    dark: '#1E3A5F',
                 },
                 surface: {
-                    DEFAULT: '#F5F4F2',
+                    DEFAULT: '#F8FAFC',
                     card: '#FFFFFF',
                 },
                 text: {
-                    primary: '#1E1C1A',
-                    secondary: '#312F2D',
-                    tertiary: '#5C5A55',
-                    muted: '#A8A5A0',
+                    primary: '#1E293B',
+                    secondary: '#334155',
+                    tertiary: '#64748B',
+                    muted: '#94A3B8',
                 },
                 border: {
-                    DEFAULT: '#E8E6E1',
-                    light: '#D0CEC9',
+                    DEFAULT: '#E2E8F0',
+                    light: '#CBD5E1',
                 },
                 status: {
                     blue: '#3B82F6',

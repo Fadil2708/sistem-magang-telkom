@@ -3,8 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Poppins', sans-serif;
+    }
+
     body {
-        font-family: 'DM Sans', sans-serif;
+        font-family: 'Open Sans', sans-serif;
         background: #F5F4F2;
         color: #312F2D;
         overflow-x: hidden;
@@ -5587,8 +5591,8 @@ textarea.input { resize: vertical; line-height: 1.6; }
     transition: background 0.1s;
 }
 .nav-dropdown-item:hover {
-    background: #F5F4F2;
-    color: #312F2D;
+        background: #F8FAFC;
+        color: #334155;
 }
 .nav-dropdown-trigger {
     display: inline-flex;
