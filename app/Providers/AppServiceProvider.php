@@ -31,5 +31,7 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('layouts.app', LayoutComposer::class);
         View::composer('*', LayoutComposer::class);
+
+        View::share('cspNonce', base64_encode(random_bytes(16)));
     }
 }
