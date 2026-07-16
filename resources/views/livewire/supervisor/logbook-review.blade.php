@@ -12,10 +12,10 @@
     </div>
     <div class="filter-bar">
         <div class="filter-tabs">
-            <button wire:click="$set('filterStatus', 'submitted')" class="filter-tab" :class="{ 'active': filterStatus === 'submitted' }">Perlu Review</button>
-            <button wire:click="$set('filterStatus', 'approved')" class="filter-tab" :class="{ 'active': filterStatus === 'approved' }">Disetujui</button>
-            <button wire:click="$set('filterStatus', 'revision_requested')" class="filter-tab" :class="{ 'active': filterStatus === 'revision_requested' }">Perlu Revisi</button>
-            <button wire:click="$set('filterStatus', '')" class="filter-tab" :class="{ 'active': !filterStatus }">Semua</button>
+            <button wire:click="$set('filterStatus', 'submitted')" class="filter-tab" :class="{ 'active': $wire.filterStatus === 'submitted' }">Perlu Review</button>
+            <button wire:click="$set('filterStatus', 'approved')" class="filter-tab" :class="{ 'active': $wire.filterStatus === 'approved' }">Disetujui</button>
+            <button wire:click="$set('filterStatus', 'revision_requested')" class="filter-tab" :class="{ 'active': $wire.filterStatus === 'revision_requested' }">Perlu Revisi</button>
+            <button wire:click="$set('filterStatus', '')" class="filter-tab" :class="{ 'active': !$wire.filterStatus }">Semua</button>
         </div>
     </div>
 
