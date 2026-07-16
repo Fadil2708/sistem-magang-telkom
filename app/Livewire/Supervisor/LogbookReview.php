@@ -39,7 +39,7 @@ class LogbookReview extends Component
 
     private function submittedIdsQuery()
     {
-        return Logbook::scopeForSupervisor(auth()->id())
+        return Logbook::forSupervisor(auth()->id())
             ->when($this->internId, fn($q) => $q->where('intern_id', $this->internId))
             ->where('validation_status', 'submitted');
     }
@@ -138,7 +138,7 @@ class LogbookReview extends Component
     {
         $supervisorId = auth()->id();
 
-        $logbooks = Logbook::scopeForSupervisor($supervisorId)
+        $logbooks = Logbook::forSupervisor($supervisorId)
             ->with(['intern.internProfile', 'internship.vacancy'])
             ->when($this->internId, fn($q) => $q->where('intern_id', $this->internId))
             ->when($this->filterStatus, fn($q) => $q->where('validation_status', $this->filterStatus))
