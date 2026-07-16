@@ -1,3 +1,4 @@
+<div>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
     <div wire:loading class="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         @for($i = 0; $i < 6; $i++)
@@ -161,4 +162,5 @@
             <div class="chart-hbar-track"><div class="chart-hbar" style="width:{{ $quotaTotal > 0 ? min(round(($quotaUsed / $quotaTotal) * 100), 100) : 0 }}%;background:#F59E0B"></div></div>
         </div>
     </div>
+</div>
 </div>
