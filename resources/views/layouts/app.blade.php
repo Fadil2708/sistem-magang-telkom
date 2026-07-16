@@ -24,7 +24,7 @@
 </head>
 <body>
 
-<script>document.documentElement.classList.remove('dark');localStorage.removeItem('dark');</script>
+<script nonce="{{ $cspNonce }}">document.documentElement.classList.remove('dark');localStorage.removeItem('dark');</script>
 
 <style>[x-cloak] { display: none !important; }</style>
 
