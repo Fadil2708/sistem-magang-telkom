@@ -13,7 +13,7 @@ export default (Alpine) => {
             if (window.location.pathname === '/') {
                 event.preventDefault();
                 document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
-                this.navOpen = false;
+                this.close();
             }
         }
     }));
