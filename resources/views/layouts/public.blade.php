@@ -99,20 +99,24 @@
 
         <div class="public-nav-links" :class="{ open: navOpen }">
             <a href="{{ route('public.vacancies') }}"
-               @click.prevent="navigate($event, 'section-vacancies')">Cari Lowongan</a>
+               @click.prevent="navigate($event, 'section-vacancies')"
+               class="{{ request()->routeIs('public.vacancies*') ? 'nav-active' : '' }}">Cari Lowongan</a>
             <a href="{{ route('public.testimonials') }}"
-               @click.prevent="navigate($event, 'section-testimonials')">Testimoni</a>
-            <a href="{{ url('/#section-faq') }}">FAQ</a>
-            <a href="{{ route('public.tentang-kami') }}">Tentang Kami</a>
+               @click.prevent="navigate($event, 'section-testimonials')"
+               class="{{ request()->routeIs('public.testimonials*') ? 'nav-active' : '' }}">Testimoni</a>
+            <a href="{{ url('/#section-faq') }}"
+               class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">FAQ</a>
+            <a href="{{ route('public.tentang-kami') }}"
+               class="{{ request()->routeIs('public.tentang-kami*') ? 'nav-active' : '' }}">Tentang Kami</a>
 
             {{-- Mobile-only auth buttons --}}
             <hr class="nav-mobile-hr">
             @auth
                 <a href="{{ url('/dashboard') }}" class="btn-nav nav-mobile-only">Dashboard</a>
             @else
-                <a href="{{ route('login') }}" class="btn-nav nav-mobile-only">Masuk</a>
+                <a href="{{ route('login') }}" class="btn-outline-nav nav-mobile-only">Masuk</a>
                 @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="btn-outline-nav nav-mobile-only">Daftar</a>
+                    <a href="{{ route('register') }}" class="btn-nav nav-mobile-only">Daftar</a>
                 @endif
             @endauth
         </div>
@@ -121,9 +125,9 @@
             @auth
                 <a href="{{ url('/dashboard') }}" class="btn-nav">Dashboard</a>
             @else
-                <a href="{{ route('login') }}" class="btn-nav"><i class="ti ti-login"></i> Masuk</a>
+                <a href="{{ route('login') }}" class="btn-outline-nav"><i class="ti ti-login"></i> Masuk</a>
                 @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="btn-outline-nav"><i class="ti ti-user-plus"></i> Daftar</a>
+                    <a href="{{ route('register') }}" class="btn-nav"><i class="ti ti-user-plus"></i> Daftar</a>
                 @endif
             @endauth
         </div>

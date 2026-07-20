@@ -1970,6 +1970,7 @@
         backdrop-filter: blur(12px) saturate(180%);
         -webkit-backdrop-filter: blur(12px) saturate(180%);
         border-bottom: 1px solid #E8E6E1;
+        box-shadow: inset 0 -1px 0 rgba(192,57,43,0.1);
         position: sticky;
         top: 0;
         z-index: 50;
@@ -1993,10 +1994,10 @@
         gap: 4px;
     }
     .public-nav-links a {
-        font-size: 13px;
+        font-size: 14px;
         color: #5C5A55;
         text-decoration: none;
-        padding: 6px 12px;
+        padding: 8px 14px;
         border-radius: 8px;
         transition: all 0.15s;
         font-weight: 500;
@@ -2004,6 +2005,11 @@
     .public-nav-links a:hover {
         color: #312F2D;
         background: #F5F4F2;
+    }
+    .public-nav-links a:active,
+    .public-nav-links a.nav-active {
+        color: #C0392B;
+        background: #FEF2F2;
     }
     .public-nav-actions {
         display: flex;
@@ -4513,31 +4519,43 @@ textarea.input { resize: vertical; line-height: 1.6; }
 
 /* ===== NAV BUTTONS (public) ===== */
 .btn-nav {
-    padding: 7px 16px;
-    font-size: 12px;
+    padding: 8px 18px;
+    font-size: 13px;
     background: #C0392B;
     color: #fff;
     border-radius: 10px;
     font-weight: 600;
     text-decoration: none;
-    transition: background 0.15s;
+    transition: background 0.15s, transform 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 .btn-nav:hover {
     background: #A52A24;
 }
+.btn-nav i {
+    font-size: 15px;
+}
 .btn-outline-nav {
-    padding: 7px 16px;
-    font-size: 12px;
-    color: #5C5A55;
+    padding: 8px 18px;
+    font-size: 13px;
+    color: #C0392B;
     text-decoration: none;
     border: 1.5px solid #E8E6E1;
     border-radius: 10px;
     font-weight: 600;
     transition: border-color 0.15s, color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 .btn-outline-nav:hover {
     border-color: #C0392B;
-    color: #C0392B;
+    color: #A52A24;
+}
+.btn-outline-nav i {
+    font-size: 15px;
 }
 
 /* ===== WELCOME SECTION (vacancies) ===== */
