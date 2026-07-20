@@ -16,6 +16,7 @@ return [
         'default-src' => ["'self'"],
         'script-src' => [
             "'self'",
+            "'unsafe-eval'",
             "'nonce-{nonce}'",
             'https://cdn.jsdelivr.net',
             'https://unpkg.com',
