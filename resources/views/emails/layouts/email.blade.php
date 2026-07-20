@@ -7,7 +7,7 @@
         body { margin: 0; padding: 0; background-color: #f3f4f6; font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; }
         .wrapper { max-width: 560px; margin: 0 auto; padding: 24px 12px; }
         .header { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 36px 24px; text-align: center; border-radius: 10px 10px 0 0; }
-        .header-logo { width: 48px; height: 48px; background: #fff; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 18px; font-weight: 800; color: #dc2626; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .header-logo { width: 48px; height: 48px; background: #000; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .header h1 { color: #ffffff; margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
         .header p { color: #fca5a5; margin: 6px 0 0; font-size: 13px; }
         .content-body { background: #ffffff; padding: 32px 28px; }
@@ -40,7 +40,7 @@
 <body>
     <div class="wrapper">
         <div class="header">
-            <div class="header-logo">T</div>
+            <div class="header-logo"><img src="{{ asset('images/TLK.webp') }}" alt="Telkom Indonesia" style="max-width:32px; max-height:32px; display:block;"></div>
             <h1>Sistem Magang &amp; PKL Telkom Sukabumi</h1>
             <p>Telkom Sukabumi</p>
         </div>
