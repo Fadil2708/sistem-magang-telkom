@@ -99,10 +99,10 @@
 
         <div class="public-nav-links" :class="{ open: navOpen }">
             <a href="{{ route('public.vacancies') }}"
-               @click.prevent="navigate($event, 'section-vacancies')"
+               @click="navigate($event, 'section-vacancies')"
                class="{{ request()->routeIs('public.vacancies*') ? 'nav-active' : '' }}">Cari Lowongan</a>
             <a href="{{ route('public.testimonials') }}"
-               @click.prevent="navigate($event, 'section-testimonials')"
+               @click="navigate($event, 'section-testimonials')"
                class="{{ request()->routeIs('public.testimonials*') ? 'nav-active' : '' }}">Testimoni</a>
             <a href="{{ url('/#section-faq') }}"
                class="{{ request()->routeIs('home') ? 'nav-active' : '' }}">FAQ</a>
