@@ -16,10 +16,7 @@ return [
         'default-src' => ["'self'"],
         'script-src' => [
             "'self'",
-            "'unsafe-inline'",
-            // Required by Alpine.js CDN build (new Function()).
-            // Remove only after CSP build migration (Sprint 6).
-            "'unsafe-eval'",
+            "'nonce-{nonce}'",
             'https://cdn.jsdelivr.net',
             'https://unpkg.com',
         ],

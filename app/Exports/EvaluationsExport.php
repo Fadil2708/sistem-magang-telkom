@@ -4,14 +4,20 @@ namespace App\Exports;
 
 use App\Models\Evaluation;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class EvaluationsExport implements FromQuery, WithHeadings, WithMapping
+class EvaluationsExport implements FromQuery, WithHeadings, WithMapping, WithChunkReading
 {
     public function query()
     {
         return Evaluation::with(['internship.intern.internProfile', 'internship.vacancy', 'supervisor.supervisorProfile']);
+    }
+
+    public function chunkSize(): int
+    {
+        return 500;
     }
 
     public function headings(): array

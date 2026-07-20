@@ -2,6 +2,7 @@
 
 namespace App\View\Composers;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
 class LayoutComposer
@@ -13,6 +14,17 @@ class LayoutComposer
             return;
         }
 
-        $view->with('showProfileStrip', auth()->check() && auth()->user()->isIntern() && !auth()->user()->internProfile?->isComplete());
+        $showStrip = false;
+        $user = auth()->user();
+
+        if ($user && $user->isIntern()) {
+            $showStrip = !Cache::remember(
+                "profile_complete_{$user->id}",
+                300,
+                fn () => $user->internProfile?->isComplete() ?? false
+            );
+        }
+
+        $view->with('showProfileStrip', $showStrip);
     }
 }

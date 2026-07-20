@@ -9,9 +9,16 @@ class FileController extends Controller
 {
     public function serve(string $path)
     {
+        $normalized = str_replace('\\', '/', $path);
+        $normalized = preg_replace('#/+#', '/', $normalized);
+
+        if (str_contains($normalized, '..')) {
+            abort(403, 'Invalid file path.');
+        }
+
         $disk = Storage::disk('private');
         $diskRoot = realpath($disk->path(''));
-        $fullPath = realpath($disk->path($path));
+        $fullPath = realpath($disk->path($normalized));
 
         if ($fullPath === false || $diskRoot === false) {
             abort(404);
@@ -27,7 +34,7 @@ class FileController extends Controller
             return response()->file($fullPath);
         }
 
-        $segments = explode('/', $path);
+        $segments = explode('/', $normalized);
 
         if (count($segments) < 2) {
             abort(403, 'Invalid file path.');
@@ -37,7 +44,7 @@ class FileController extends Controller
         $ownerId = $segments[1];
 
         if ($type === 'reports') {
-            $internship = Internship::with('intern')->find($ownerId);
+            $internship = Internship::with(['intern', 'supervisor'])->find($ownerId);
             if (!$internship) {
                 abort(404);
             }

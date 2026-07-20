@@ -4,14 +4,20 @@ namespace App\Exports;
 
 use App\Models\Certificate;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class CertificatesExport implements FromQuery, WithHeadings, WithMapping
+class CertificatesExport implements FromQuery, WithHeadings, WithMapping, WithChunkReading
 {
     public function query()
     {
         return Certificate::with(['intern.internProfile', 'internship.vacancy', 'issuedBy']);
+    }
+
+    public function chunkSize(): int
+    {
+        return 500;
     }
 
     public function headings(): array

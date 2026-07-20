@@ -4,14 +4,20 @@ namespace App\Exports;
 
 use App\Models\Logbook;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class LogbooksExport implements FromQuery, WithHeadings, WithMapping
+class LogbooksExport implements FromQuery, WithHeadings, WithMapping, WithChunkReading
 {
     public function query()
     {
         return Logbook::with(['intern.internProfile', 'internship.vacancy']);
+    }
+
+    public function chunkSize(): int
+    {
+        return 500;
     }
 
     public function headings(): array

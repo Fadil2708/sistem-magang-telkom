@@ -4,7 +4,6 @@ namespace App\Traits;
 
 use App\Models\AuditLog;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
 
 trait Auditable
 {
@@ -34,8 +33,8 @@ trait Auditable
             'auditable_id' => $this->getKey(),
             'old_values' => $oldValues,
             'new_values' => $newValues,
-            'ip_address' => Request::ip(),
-            'user_agent' => Request::userAgent(),
+            'ip_address' => request()->ip() ?? '',
+            'user_agent' => request()->userAgent() ?? '',
         ]);
     }
 

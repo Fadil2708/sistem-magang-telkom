@@ -12,14 +12,7 @@ return new class extends Migration
             return;
         }
 
-        DB::statement("ALTER TABLE applications MODIFY COLUMN status ENUM(
-            'submitted',
-            'under_review',
-            'interview_scheduled',
-            'accepted',
-            'rejected',
-            'cancelled'
-        ) NOT NULL DEFAULT 'submitted'");
+        DB::statement("ALTER TABLE applications MODIFY COLUMN status VARCHAR(50) NOT NULL DEFAULT 'submitted'");
     }
 
     public function down(): void
@@ -28,12 +21,6 @@ return new class extends Migration
             return;
         }
 
-        DB::statement("ALTER TABLE applications MODIFY COLUMN status ENUM(
-            'submitted',
-            'under_review',
-            'interview_scheduled',
-            'accepted',
-            'rejected'
-        ) NOT NULL DEFAULT 'submitted'");
+        DB::statement("ALTER TABLE applications MODIFY COLUMN status VARCHAR(50) NOT NULL DEFAULT 'submitted'");
     }
 };

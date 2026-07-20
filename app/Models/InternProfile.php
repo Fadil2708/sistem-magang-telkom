@@ -35,7 +35,7 @@ class InternProfile extends Model
 
     public static function requiredFields(): array
     {
-        return ['full_name', 'institution_name', 'major', 'student_id', 'cv_url'];
+        return ['full_name', 'phone', 'institution_name', 'major', 'student_id', 'cv_url'];
     }
 
     public function isComplete(): bool

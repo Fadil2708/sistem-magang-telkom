@@ -15,12 +15,13 @@ class EvaluationService
             ($evaluation->attitude_score * 0.20)
         );
 
-        $evaluation->final_score = round($finalScore, 2);
+        $finalScore = round($finalScore, 2);
+        $evaluation->final_score = $finalScore;
 
         $evaluation->grade = match (true) {
-            $evaluation->final_score >= 85 => 'A',
-            $evaluation->final_score >= 70 => 'B',
-            $evaluation->final_score >= 55 => 'C',
+            $finalScore >= 85 => 'A',
+            $finalScore >= 70 => 'B',
+            $finalScore >= 55 => 'C',
             default                        => 'D',
         };
     }

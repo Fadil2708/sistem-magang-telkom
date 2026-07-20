@@ -27,6 +27,7 @@ class ApplicationService
         $this->ensureProfileComplete($intern);
         $this->ensureVacancyOpen($vacancy);
         $this->ensureNotDuplicate($intern, $vacancy);
+        $this->ensureNoActiveInternship($intern);
         $this->ensureActiveApplicationLimit($intern);
 
         return DB::transaction(function () use ($intern, $vacancy) {
@@ -151,6 +152,17 @@ class ApplicationService
 
         if ($acceptedCount >= $vacancy->quota) {
             throw new QuotaFullException();
+        }
+    }
+
+    private function ensureNoActiveInternship(User $intern): void
+    {
+        $hasActive = Internship::where('intern_id', $intern->id)
+            ->whereIn('status', ['active', 'extended'])
+            ->exists();
+
+        if ($hasActive) {
+            throw new \Exception('Anda masih memiliki magang aktif. Tidak dapat melamar lowongan baru.');
         }
     }
 

@@ -22,8 +22,6 @@ class VacancyForm extends Component
 
     public function mount(?string $id = null): void
     {
-        Vacancy::autoCloseExpired();
-
         if ($id) {
             $this->vacancy = Vacancy::findOrFail($id);
             $this->title = $this->vacancy->title;
