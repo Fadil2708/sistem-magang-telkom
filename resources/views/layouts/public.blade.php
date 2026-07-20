@@ -128,7 +128,14 @@
             @endauth
         </div>
 
-        <div x-show="navOpen" @click="close" class="nav-overlay" x-cloak></div>
+        <div x-show="navOpen" @click="close"
+             x-transition:enter="transition-opacity duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="nav-overlay"></div>
     </nav>
 
     @yield('content')

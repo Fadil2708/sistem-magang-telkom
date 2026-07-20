@@ -2712,14 +2712,21 @@
         pointer-events: auto;
     }
     .public-nav-links a {
-        padding: 8px 12px;
-        font-size: 13px;
+        padding: 14px 16px;
+        font-size: 15px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        border-radius: 10px;
     }
     .public-nav-links .btn-nav,
     .public-nav-links .btn-outline-nav {
         width: 100%;
         text-align: center;
+        padding: 14px 16px;
+        min-height: 48px;
         margin-top: 4px;
+        border-radius: 10px;
     }
     .nav-mobile-only { display: block; }
     .nav-mobile-hr { display: block; border: none; border-top: 1px solid #E8E6E1; margin: 6px 0; width: 100%; }

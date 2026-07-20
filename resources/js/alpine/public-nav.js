@@ -3,9 +3,11 @@ export default (Alpine) => {
         navOpen: false,
         toggle() {
             this.navOpen = !this.navOpen;
+            document.body.style.overflow = this.navOpen ? 'hidden' : '';
         },
         close() {
             this.navOpen = false;
+            document.body.style.overflow = '';
         },
         navigate(event, sectionId) {
             if (window.location.pathname === '/') {
