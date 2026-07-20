@@ -111,14 +111,16 @@
 
             {{-- Mobile-only auth buttons --}}
             <hr class="nav-mobile-hr">
-            @auth
-                <a href="{{ url('/dashboard') }}" class="btn-nav nav-mobile-only">Dashboard</a>
-            @else
-                <a href="{{ route('login') }}" class="btn-outline-nav nav-mobile-only">Masuk</a>
-                @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="btn-nav nav-mobile-only">Daftar</a>
-                @endif
-            @endauth
+            <div class="nav-mobile-auth">
+                @auth
+                    <a href="{{ url('/dashboard') }}" class="btn-nav">Dashboard</a>
+                @else
+                    <a href="{{ route('login') }}" class="btn-outline-nav">Masuk</a>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="btn-nav">Daftar</a>
+                    @endif
+                @endauth
+            </div>
         </div>
 
         <div class="public-nav-actions">

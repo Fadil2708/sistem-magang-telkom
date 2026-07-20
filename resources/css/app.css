@@ -1957,7 +1957,7 @@
     .alert-wrap { padding: 0 20px 0; }
 
     /* ===== NAV UTILITY ===== */
-    .nav-mobile-only { display: none; }
+    .nav-mobile-auth { display: none; }
     .nav-mobile-hr { display: none; }
 
     /* ===== PUBLIC NAV ===== */
@@ -2734,8 +2734,9 @@
         margin-top: 4px;
         border-radius: 10px;
     }
-    .nav-mobile-only { display: block; }
-    .nav-mobile-hr { display: block; border: none; border-top: 1px solid #E8E6E1; margin: 6px 0; width: 100%; }
+    .nav-mobile-auth { display: flex; flex-direction: column; gap: 6px; }
+    .nav-mobile-auth .btn-nav,
+    .nav-mobile-auth .btn-outline-nav { width: 100%; text-align: center; padding: 14px 16px; min-height: 48px; border-radius: 10px; }
 
     .topbar {
         padding: 10px 14px;
