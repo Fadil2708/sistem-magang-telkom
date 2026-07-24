@@ -5,7 +5,7 @@ namespace App\Livewire\Supervisor;
 use App\Models\SupervisorProfile;
 use Livewire\Component;
 
-class ProfileForm extends Component
+class SupervisorProfileForm extends Component
 {
     public $full_name = '';
     public $employee_id = '';
@@ -15,27 +15,24 @@ class ProfileForm extends Component
 
     public function mount(): void
     {
-        $profile = auth()->user()->supervisorProfile;
+        $profile = SupervisorProfile::where('user_id', auth()->id())->first();
 
         if ($profile) {
-            $this->full_name = $profile->full_name;
-            $this->employee_id = $profile->employee_id;
-            $this->division = $profile->division;
-            $this->position = $profile->position;
-            $this->phone = $profile->phone;
+            $this->full_name = $profile->full_name ?? '';
+            $this->employee_id = $profile->employee_id ?? '';
+            $this->division = $profile->division ?? '';
+            $this->position = $profile->position ?? '';
+            $this->phone = $profile->phone ?? '';
         }
     }
 
-    public function rules(): array
-    {
-        return [
-            'full_name' => 'required|string|max:255',
-            'employee_id' => 'nullable|string|max:100',
-            'division' => 'nullable|string|max:255',
-            'position' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
-        ];
-    }
+    protected $rules = [
+        'full_name' => 'required|string|max:255',
+        'employee_id' => 'nullable|string|max:50',
+        'division' => 'nullable|string|max:255',
+        'position' => 'nullable|string|max:255',
+        'phone' => 'nullable|string|max:20',
+    ];
 
     public function save(): void
     {
@@ -45,14 +42,14 @@ class ProfileForm extends Component
             ['user_id' => auth()->id()],
             [
                 'full_name' => $this->full_name,
-                'employee_id' => $this->employee_id ?: null,
-                'division' => $this->division ?: null,
-                'position' => $this->position ?: null,
-                'phone' => $this->phone ?: null,
+                'employee_id' => $this->employee_id,
+                'division' => $this->division,
+                'position' => $this->position,
+                'phone' => $this->phone,
             ]
         );
 
-        session()->flash('success', 'Profil berhasil disimpan.');
+        $this->dispatch('toast', message: 'Profil berhasil disimpan.', type: 'success');
     }
 
     public function render()

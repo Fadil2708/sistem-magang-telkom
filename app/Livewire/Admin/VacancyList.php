@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\Vacancy;
+use App\Services\VacancyService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -15,15 +15,15 @@ class VacancyList extends Component
     public $sortField = 'created_at';
     public $sortDirection = 'desc';
 
-    public function updatingSearch(): void
+    private VacancyService $vacancyService;
+
+    public function boot(VacancyService $vacancyService): void
     {
-        $this->resetPage();
+        $this->vacancyService = $vacancyService;
     }
 
-    public function updatingFilterStatus(): void
-    {
-        $this->resetPage();
-    }
+    public function updatingSearch(): void { $this->resetPage(); }
+    public function updatingFilterStatus(): void { $this->resetPage(); }
 
     public function sortBy(string $field): void
     {
@@ -35,29 +35,14 @@ class VacancyList extends Component
         }
     }
 
-    public function deleteVacancy(string $id): void
-    {
-        abort_unless(auth()->user()->isAdmin(), 403);
-        $vacancy = Vacancy::findOrFail($id);
-
-        if ($vacancy->applications()->exists()) {
-            $this->dispatch('toast', message: 'Lowongan tidak bisa dihapus karena sudah memiliki pelamar.', type: 'error');
-            return;
-        }
-
-        $vacancy->delete();
-        $this->dispatch('toast', message: 'Lowongan berhasil dihapus.', type: 'success');
-    }
-
     public function render()
     {
-        Vacancy::autoCloseExpired();
-
-        $vacancies = Vacancy::withCount('acceptedApplications')
-            ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
-            ->when($this->filterStatus, fn($q) => $q->where('status', $this->filterStatus))
-            ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+        $vacancies = $this->vacancyService->getPaginatedList(
+            $this->search,
+            $this->filterStatus,
+            $this->sortField,
+            $this->sortDirection
+        );
 
         return view('livewire.admin.vacancy-list', compact('vacancies'));
     }

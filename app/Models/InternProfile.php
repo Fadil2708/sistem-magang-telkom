@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class InternProfile extends Model
 {
-    use HasFactory, HasUuid;
+    use HasFactory, HasUuid, Auditable;
 
     protected $fillable = [
         'user_id', 'full_name', 'gender', 'phone', 'address', 'date_of_birth',

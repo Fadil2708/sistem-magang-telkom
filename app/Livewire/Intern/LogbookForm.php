@@ -24,77 +24,83 @@ class LogbookForm extends Component
         $this->logbookService = $logbookService;
     }
 
-    protected function rules(): array
+    protected $rules = [
+        'activity_date' => 'required|date',
+        'activities' => 'required|string',
+        'output' => 'required|string',
+    ];
+
+    public function mount(): void
     {
-        return [
-            'activity_date' => 'required|date|before_or_equal:today',
-            'activities'    => 'required|string|min:20',
-            'output'        => 'required|string|min:10',
-        ];
+        $this->activity_date = now()->format('Y-m-d');
+        $this->checkActiveInternship();
     }
 
-    public function mount(?string $id = null): void
+    public function checkActiveInternship(): void
     {
         $internship = Internship::where('intern_id', auth()->id())
             ->where('status', 'active')
-            ->latest()
             ->first();
 
         $this->hasActiveInternship = $internship !== null;
-
-        if ($id) {
-            $logbook = Logbook::where('intern_id', auth()->id())
-                ->whereIn('validation_status', ['draft', 'revision_requested'])
-                ->findOrFail($id);
-
-            $this->logbookId = $logbook->id;
-            $this->activity_date = $logbook->activity_date?->format('Y-m-d') ?? '';
-            $this->activities = $logbook->activities;
-            $this->output = $logbook->output;
-            $this->validationStatus = $logbook->validation_status;
-        }
     }
 
-    public function save(): void
+    public function edit(string $id): void
+    {
+        $logbook = Logbook::where('intern_id', auth()->id())->findOrFail($id);
+        $this->logbookId = $logbook->id;
+        $this->activity_date = $logbook->activity_date->format('Y-m-d');
+        $this->activities = $logbook->activities;
+        $this->output = $logbook->output;
+        $this->validationStatus = $logbook->validation_status;
+    }
+
+    public function saveAsDraft(): void
+    {
+        $this->save('draft');
+    }
+
+    public function submit(): void
+    {
+        $this->save('submitted');
+    }
+
+    private function save(string $status): void
     {
         $this->validate();
 
         $internship = Internship::where('intern_id', auth()->id())
             ->where('status', 'active')
-            ->latest()
-            ->first();
-
-        if (!$internship) {
-            $this->addError('activity_date', 'Tidak ada magang aktif. Tidak dapat membuat logbook.');
-            return;
-        }
-
-        $data = [
-            'activity_date' => $this->activity_date,
-            'activities' => $this->activities,
-            'output' => $this->output,
-            'validation_status' => 'draft',
-        ];
+            ->firstOrFail();
 
         try {
+            $data = [
+                'activity_date' => $this->activity_date,
+                'activities' => $this->activities,
+                'output' => $this->output,
+            ];
+
             if ($this->logbookId) {
-                $logbook = Logbook::where('intern_id', auth()->id())
-                    ->whereIn('validation_status', ['draft', 'revision_requested'])
-                    ->findOrFail($this->logbookId);
-
-                $this->logbookService->update($logbook, auth()->user(), $data);
-                session()->flash('success', 'Logbook berhasil diperbarui.');
+                $logbook = Logbook::where('intern_id', auth()->id())->findOrFail($this->logbookId);
+                $this->logbookService->update($logbook, $data, $status);
+                $this->dispatch('toast', message: 'Logbook berhasil diperbarui.', type: 'success');
             } else {
-                $this->logbookService->create($internship->id, auth()->user(), $data);
-                session()->flash('success', 'Logbook berhasil dibuat.');
+                $this->logbookService->create($internship->id, auth()->user(), $data + ['validation_status' => $status]);
+                $this->dispatch('toast', message: 'Logbook berhasil disimpan.', type: 'success');
             }
-        } catch (\Exception $e) {
-            Log::warning("[LogbookForm] save error: {$e->getMessage()}");
-            $this->addError('activity_date', $e->getMessage());
-            return;
-        }
 
-        $this->redirect(route('intern.logbooks'), navigate: true);
+            $this->resetForm();
+        } catch (\Exception $e) {
+            Log::error('Logbook save failed: ' . $e->getMessage());
+            $this->dispatch('toast', message: 'Gagal menyimpan logbook: ' . $e->getMessage(), type: 'error');
+        }
+    }
+
+    public function resetForm(): void
+    {
+        $this->reset(['logbookId', 'activity_date', 'activities', 'output', 'validationStatus']);
+        $this->activity_date = now()->format('Y-m-d');
+        $this->validationStatus = 'draft';
     }
 
     public function render()

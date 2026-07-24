@@ -17,59 +17,51 @@ class CertificateList extends Component
     public $filterGrade = '';
     public $confirmingIssueId = null;
 
+    private CertificateService $certificateService;
+
+    public function boot(CertificateService $certificateService): void
+    {
+        $this->certificateService = $certificateService;
+    }
+
     public function updatingSearch(): void { $this->resetPage(); }
     public function updatingFilterGrade(): void { $this->resetPage(); }
 
-    public function confirmIssue(string $internshipId): void
+    public function confirmIssue(string $id): void
     {
-        $this->confirmingIssueId = $internshipId;
+        $this->confirmingIssueId = $id;
     }
 
-    public function issue(CertificateService $service): void
+    public function issue(): void
     {
-        abort_unless(auth()->user()->isAdmin(), 403);
-        $internship = Internship::with('evaluation')
-            ->where('status', 'completed')
-            ->findOrFail($this->confirmingIssueId);
+        $internship = Internship::with('evaluation')->where('status', 'completed')->findOrFail($this->confirmingIssueId);
 
-        if (!$internship->evaluation) {
-            $this->dispatch('toast', message: 'Penilaian belum diisi oleh pembimbing.', type: 'error');
-            $this->confirmingIssueId = null;
-            return;
+        try {
+            $certificate = $this->certificateService->issue($internship, auth()->id());
+            $internship->intern->notify(new CertificateNotification($certificate));
+            $this->dispatch('toast', message: 'Sertifikat berhasil diterbitkan.', type: 'success');
+        } catch (\Exception $e) {
+            $this->dispatch('toast', message: $e->getMessage(), type: 'error');
         }
-
-        if ($internship->certificate) {
-            $this->dispatch('toast', message: 'Sertifikat sudah diterbitkan.', type: 'warning');
-            $this->confirmingIssueId = null;
-            return;
-        }
-
-        $certificate = $service->issue($internship, auth()->id());
-
-        $certificate->intern->notify(new CertificateNotification($certificate));
-
-        dispatch(new \App\Jobs\GenerateCertificatePdfJob($certificate));
 
         $this->confirmingIssueId = null;
-        $this->dispatch('toast', message: 'Sertifikat berhasil diterbitkan.', type: 'success');
     }
 
     public function render()
     {
         $certificates = Certificate::with(['intern.internProfile', 'issuedBy'])
-            ->when($this->search, fn($q) => $q->where(function ($q) {
-                $q->where('certificate_number', 'like', "%{$this->search}%")
-                  ->orWhereHas('intern.internProfile', fn($p) => $p->where('full_name', 'like', "%{$this->search}%"));
-            }))
+            ->when($this->search, fn($q) => $q->whereHas('intern.internProfile', fn($p) =>
+                $p->where('full_name', 'like', "%{$this->search}%")
+            ))
             ->when($this->filterGrade, fn($q) => $q->where('grade', $this->filterGrade))
-            ->orderBy('issued_at', 'desc')
+            ->latest()
             ->paginate(10);
 
-        $pendingInternships = Internship::with(['intern.internProfile', 'vacancy', 'evaluation', 'certificate'])
+        $completedInternships = Internship::with(['intern.internProfile', 'vacancy', 'evaluation', 'certificate'])
             ->where('status', 'completed')
             ->whereDoesntHave('certificate')
-            ->get();
+            ->paginate(10);
 
-        return view('livewire.admin.certificate-list', compact('certificates', 'pendingInternships'));
+        return view('livewire.admin.certificate-list', compact('certificates', 'completedInternships'));
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Intern;
 
-use App\Models\Vacancy;
+use App\Services\VacancyService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,20 +13,19 @@ class VacancyList extends Component
     public $search = '';
     public $filterDivision = '';
 
+    private VacancyService $vacancyService;
+
+    public function boot(VacancyService $vacancyService): void
+    {
+        $this->vacancyService = $vacancyService;
+    }
+
     public function updatingSearch(): void { $this->resetPage(); }
     public function updatingFilterDivision(): void { $this->resetPage(); }
 
     public function render()
     {
-        $vacancies = Vacancy::withCount('acceptedApplications')->where('status', 'open')
-            ->where('application_deadline', '>=', now()->format('Y-m-d'))
-            ->when($this->search, fn($q) => $q->where('title', 'like', "%{$this->search}%"))
-            ->when($this->filterDivision, fn($q) => $q->where('division', $this->filterDivision))
-            ->orderBy('application_deadline', 'asc')
-            ->paginate(10);
-
-        $divisions = Vacancy::where('status', 'open')->select('division')->distinct()->pluck('division');
-
-        return view('livewire.intern.vacancy-list', compact('vacancies', 'divisions'));
+        $vacancies = $this->vacancyService->getOpenVacancies($this->search, $this->filterDivision);
+        return view('livewire.intern.vacancy-list', compact('vacancies'));
     }
 }

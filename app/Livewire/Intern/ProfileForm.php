@@ -4,8 +4,6 @@ namespace App\Livewire\Intern;
 
 use App\Models\InternProfile;
 use App\Models\Skill;
-use App\Services\FileUploadService;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -22,80 +20,54 @@ class ProfileForm extends Component
     public $institution_type = '';
     public $major = '';
     public $student_id = '';
-
     public $photo;
     public $cv;
     public $cover_letter;
+    public $selectedSkills = [];
 
-    public $existing_photo_url = '';
-    public $existing_cv_url = '';
-    public $existing_cover_letter_url = '';
-
-    public $photo_url = '';
-    public $cv_url = '';
-    public $cover_letter_url = '';
-
-    public array $selectedSkills = [];
-
-    public bool $isEditing = false;
-    public bool $hasProfile = false;
+    public $existingPhoto = null;
+    public $existingCv = null;
+    public $existingCoverLetter = null;
+    public $allSkills = [];
 
     public function mount(): void
     {
-        $profile = auth()->user()->internProfile;
-        $disk = Storage::disk(config('filesystems.private_disk'));
+        $profile = InternProfile::where('user_id', auth()->id())->first();
+        $this->allSkills = Skill::orderBy('name')->get();
 
         if ($profile) {
-            $this->full_name = $profile->full_name;
-            $this->gender = $profile->gender;
-            $this->selectedSkills = $profile->skills->pluck('id')->toArray();
-            $this->phone = $profile->phone;
-            $this->address = $profile->address;
+            $this->full_name = $profile->full_name ?? '';
+            $this->gender = $profile->gender ?? '';
+            $this->phone = $profile->phone ?? '';
+            $this->address = $profile->address ?? '';
             $this->date_of_birth = $profile->date_of_birth?->format('Y-m-d') ?? '';
-            $this->institution_name = $profile->institution_name;
-            $this->institution_type = $profile->institution_type;
-            $this->major = $profile->major;
-            $this->student_id = $profile->student_id;
-            $this->existing_photo_url = $profile->photo_url && $disk->exists($profile->photo_url) ? $profile->photo_url : '';
-            $this->existing_cv_url = $profile->cv_url && $disk->exists($profile->cv_url) ? $profile->cv_url : '';
-            $this->existing_cover_letter_url = $profile->cover_letter_url && $disk->exists($profile->cover_letter_url) ? $profile->cover_letter_url : '';
-            $this->photo_url = $this->existing_photo_url ? url('private/' . $this->existing_photo_url) : '';
-            $this->cv_url = $this->existing_cv_url ? url('private/' . $this->existing_cv_url) : '';
-            $this->cover_letter_url = $this->existing_cover_letter_url ? url('private/' . $this->existing_cover_letter_url) : '';
+            $this->institution_name = $profile->institution_name ?? '';
+            $this->institution_type = $profile->institution_type ?? '';
+            $this->major = $profile->major ?? '';
+            $this->student_id = $profile->student_id ?? '';
+            $this->existingPhoto = $profile->photo_url;
+            $this->existingCv = $profile->cv_url;
+            $this->existingCoverLetter = $profile->cover_letter_url;
+            $this->selectedSkills = $profile->skills->pluck('id')->map(fn($id) => (string) $id)->toArray();
         }
-
-        $this->hasProfile = $profile && !empty($profile->full_name);
-        $this->isEditing = !$this->hasProfile;
     }
 
-    public function cancelEdit(): void
+    public function save(): void
     {
-        $this->isEditing = false;
-        $this->reset('photo', 'cv', 'cover_letter');
-        $this->resetValidation();
-    }
-
-    public function rules(): array
-    {
-        return [
+        $this->validate([
             'full_name' => 'required|string|max:255',
-            'gender' => 'nullable|in:male,female',
+            'gender' => 'nullable|in:L,P',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'date_of_birth' => 'nullable|date|before:today',
+            'date_of_birth' => 'nullable|date',
             'institution_name' => 'required|string|max:255',
-            'institution_type' => 'required|in:university,vocational,highschool',
-            'major' => 'required|string|max:255',
-            'student_id' => 'required|string|max:100',
-            'photo' => 'nullable|image|mimetypes:image/jpeg,image/png|max:2048',
-            'cv' => 'nullable|file|mimetypes:application/pdf|max:5120',
-            'cover_letter' => 'nullable|file|mimetypes:application/pdf|max:5120',
-        ];
-    }
-
-    public function save(FileUploadService $uploadService): void
-    {
-        $this->validate();
+            'institution_type' => 'nullable|string|max:255',
+            'major' => 'nullable|string|max:255',
+            'student_id' => 'nullable|string|max:50',
+            'photo' => 'nullable|image|max:2048',
+            'cv' => 'nullable|file|mimes:pdf|max:5120',
+            'cover_letter' => 'nullable|file|mimes:pdf|max:5120',
+        ]);
 
         $data = [
             'user_id' => auth()->id(),
@@ -111,62 +83,26 @@ class ProfileForm extends Component
         ];
 
         if ($this->photo) {
-            if ($this->existing_photo_url) {
-                $uploadService->delete($this->existing_photo_url);
-            }
-            $url = $uploadService->uploadProfilePhoto($this->photo, auth()->id());
-            if (!$url) {
-                session()->flash('error', 'Gagal mengupload foto profil.');
-                return;
-            }
-            $data['photo_url'] = $url;
+            $data['photo_url'] = $this->photo->store('photos', 'public');
         }
-
         if ($this->cv) {
-            if ($this->existing_cv_url) {
-                $uploadService->delete($this->existing_cv_url);
-            }
-            $url = $uploadService->uploadCv($this->cv, auth()->id());
-            if (!$url) {
-                session()->flash('error', 'Gagal mengupload CV.');
-                return;
-            }
-            $data['cv_url'] = $url;
+            $data['cv_url'] = $this->cv->store('cvs', 'public');
         }
-
         if ($this->cover_letter) {
-            if ($this->existing_cover_letter_url) {
-                $uploadService->delete($this->existing_cover_letter_url);
-            }
-            $url = $uploadService->uploadCoverLetter($this->cover_letter, auth()->id());
-            if (!$url) {
-                session()->flash('error', 'Gagal mengupload cover letter.');
-                return;
-            }
-            $data['cover_letter_url'] = $url;
+            $data['cover_letter_url'] = $this->cover_letter->store('cover-letters', 'public');
         }
 
         $profile = InternProfile::updateOrCreate(['user_id' => auth()->id()], $data);
-        $profile->skills()->sync($this->selectedSkills);
-        $disk = Storage::disk(config('filesystems.private_disk'));
 
-        $this->existing_photo_url = $profile->photo_url && $disk->exists($profile->photo_url) ? $profile->photo_url : '';
-        $this->existing_cv_url = $profile->cv_url && $disk->exists($profile->cv_url) ? $profile->cv_url : '';
-        $this->existing_cover_letter_url = $profile->cover_letter_url && $disk->exists($profile->cover_letter_url) ? $profile->cover_letter_url : '';
-        $this->photo_url = $this->existing_photo_url ? url('private/' . $this->existing_photo_url) : '';
-        $this->cv_url = $this->existing_cv_url ? url('private/' . $this->existing_cv_url) : '';
-        $this->cover_letter_url = $this->existing_cover_letter_url ? url('private/' . $this->existing_cover_letter_url) : '';
-        $this->selectedSkills = $profile->skills->pluck('id')->toArray();
-        $this->isEditing = false;
-        $this->hasProfile = true;
-        session()->flash('success', 'Profil berhasil disimpan.');
+        if ($this->selectedSkills) {
+            $profile->skills()->sync($this->selectedSkills);
+        }
+
+        $this->dispatch('toast', message: 'Profil berhasil disimpan.', type: 'success');
     }
 
     public function render()
     {
-        $allSkills = Skill::orderBy('category')->orderBy('name')->get()->groupBy('category');
-        $skillsList = Skill::whereIn('id', $this->selectedSkills)->get();
-
-        return view('livewire.intern.profile-form', compact('allSkills', 'skillsList'));
+        return view('livewire.intern.profile-form');
     }
 }

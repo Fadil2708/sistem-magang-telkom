@@ -7,44 +7,34 @@ use Livewire\Component;
 class NotificationBell extends Component
 {
     public int $unreadCount = 0;
-    public array $recentNotifications = [];
+    public $notifications = [];
 
-    protected function getListeners(): array
+    public function mount(): void
     {
-        return ['notification-refresh' => 'refresh'];
+        $this->loadNotifications();
     }
 
-    public function refresh(): void
+    public function loadNotifications(): void
     {
         $user = auth()->user();
-        if (!$user) return;
-
-        $this->unreadCount = $user->unreadNotifications()->count();
-        $this->recentNotifications = $user->unreadNotifications()
-            ->take(5)
-            ->get()
-            ->toArray();
+        $this->unreadCount = $user->unreadNotifications->count();
+        $this->notifications = $user->notifications()->latest()->take(10)->get();
     }
 
     public function markAsRead(string $id): void
     {
-        auth()->user()->unreadNotifications()
-            ->where('id', $id)
-            ->update(['read_at' => now()]);
-        $this->refresh();
-        $this->dispatch('notification-read');
+        auth()->user()->notifications()->where('id', $id)->first()?->markAsRead();
+        $this->loadNotifications();
     }
 
     public function markAllAsRead(): void
     {
-        auth()->user()->unreadNotifications()->update(['read_at' => now()]);
-        $this->refresh();
-        $this->dispatch('notification-read');
+        auth()->user()->unreadNotifications->markAsRead();
+        $this->loadNotifications();
     }
 
     public function render()
     {
-        $this->refresh();
         return view('livewire.notification-bell');
     }
 }

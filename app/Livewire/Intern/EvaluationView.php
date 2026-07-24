@@ -2,20 +2,17 @@
 
 namespace App\Livewire\Intern;
 
-use App\Models\Internship;
+use App\Models\Evaluation;
 use Livewire\Component;
 
 class EvaluationView extends Component
 {
-    public ?Internship $internship = null;
-    public ?string $scoreLabel = null;
-    public ?string $scoreColor = null;
+    public $evaluation = null;
 
     public function mount(): void
     {
-        $this->internship = Internship::where('intern_id', auth()->id())
-            ->whereIn('status', ['active', 'completed', 'terminated'])
-            ->with(['evaluation', 'vacancy', 'supervisor.supervisorProfile'])
+        $this->evaluation = Evaluation::with(['supervisor.supervisorProfile', 'internship.vacancy'])
+            ->whereHas('internship', fn($q) => $q->where('intern_id', auth()->id()))
             ->latest()
             ->first();
     }

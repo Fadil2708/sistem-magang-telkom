@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\Testimonial;
+use App\Services\TestimonialService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,35 +13,31 @@ class TestimonialList extends Component
     public $filterStatus = '';
     public $confirmingToggleId = null;
 
-    public function updatingFilterStatus(): void
+    private TestimonialService $testimonialService;
+
+    public function boot(TestimonialService $testimonialService): void
     {
-        $this->resetPage();
+        $this->testimonialService = $testimonialService;
     }
+
+    public function updatingFilterStatus(): void { $this->resetPage(); }
 
     public function confirmToggle(string $id): void
     {
         $this->confirmingToggleId = $id;
     }
 
-    public function togglePublish(): void
+    public function togglePublished(): void
     {
-        abort_unless(auth()->user()->isAdmin(), 403);
-        $testimonial = Testimonial::findOrFail($this->confirmingToggleId);
-        $testimonial->update(['is_published' => !$testimonial->is_published]);
-
-        $status = $testimonial->fresh()->is_published ? 'ditayangkan' : 'disembunyikan';
-        $this->dispatch('toast', message: "Testimoni berhasil {$status}.", type: 'success');
+        $testimonial = $this->testimonialService->togglePublished($this->confirmingToggleId);
+        $status = $testimonial->is_published ? 'dipublikasikan' : 'ditangguhkan';
+        $this->dispatch('toast', message: "Testimonial berhasil {$status}.", type: 'success');
         $this->confirmingToggleId = null;
     }
 
     public function render()
     {
-        $testimonials = Testimonial::with(['intern.internProfile', 'internship.vacancy'])
-            ->when($this->filterStatus === 'published', fn($q) => $q->where('is_published', true))
-            ->when($this->filterStatus === 'pending', fn($q) => $q->where('is_published', false))
-            ->latest()
-            ->paginate(10);
-
+        $testimonials = $this->testimonialService->getPaginatedList($this->filterStatus);
         return view('livewire.admin.testimonial-list', compact('testimonials'));
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Livewire\Supervisor;
 
 use App\Models\FinalReport;
-use App\Notifications\ReportNotification;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -11,78 +10,15 @@ class ReportReview extends Component
 {
     use WithPagination;
 
-    public string $filterStatus = 'pending';
-
-    private function toast(string $message, string $type = 'success'): void
+    private function baseQuery()
     {
-        $this->dispatch('toast', message: $message, type: $type);
-    }
-
-    public function updatingFilterStatus(): void
-    {
-        $this->resetPage();
-    }
-
-    public function approve(string $id): void
-    {
-        try {
-            $report = FinalReport::whereHas('internship', fn($q) =>
-                $q->where('supervisor_id', auth()->id())
-            )->with(['intern.internProfile'])->findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            $this->toast('Laporan tidak ditemukan.', 'error');
-            return;
-        }
-
-        if ($report->supervisor_approval !== 'pending') {
-            $this->toast('Laporan ini sudah direview.', 'error');
-            return;
-        }
-
-        $report->update([
-            'supervisor_approval' => 'approved',
-            'approved_at' => now(),
-        ]);
-
-        $report->intern->notify(new ReportNotification($report, 'approved'));
-
-        $this->toast('Laporan akhir berhasil disetujui.', 'success');
-    }
-
-    public function reject(string $id): void
-    {
-        try {
-            $report = FinalReport::whereHas('internship', fn($q) =>
-                $q->where('supervisor_id', auth()->id())
-            )->with(['intern.internProfile'])->findOrFail($id);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            $this->toast('Laporan tidak ditemukan.', 'error');
-            return;
-        }
-
-        if ($report->supervisor_approval !== 'pending') {
-            $this->toast('Laporan ini sudah direview.', 'error');
-            return;
-        }
-
-        $report->update([
-            'supervisor_approval' => 'rejected',
-        ]);
-
-        $report->intern->notify(new ReportNotification($report, 'rejected'));
-
-        $this->toast('Laporan akhir ditolak.', 'success');
+        return FinalReport::with(['intern.internProfile', 'internship.vacancy'])
+            ->whereHas('internship', fn($q) => $q->where('supervisor_id', auth()->id()));
     }
 
     public function render()
     {
-        $supervisorId = auth()->id();
-
-        $reports = FinalReport::whereHas('internship', fn($q) =>
-            $q->where('supervisor_id', $supervisorId)
-        )
-            ->with(['intern.internProfile', 'internship.vacancy'])
-            ->when($this->filterStatus, fn($q) => $q->where('supervisor_approval', $this->filterStatus))
+        $reports = $this->baseQuery()
             ->latest('submitted_at')
             ->paginate(10);
 

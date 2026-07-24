@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Intern;
 
+use App\Models\Application;
 use App\Models\Vacancy;
 use App\Notifications\ApplicationNotification;
 use App\Services\ApplicationService;
@@ -16,6 +17,13 @@ class ApplicationForm extends Component
     public ?string $applicationStatus = null;
     public ?string $errorMessage = null;
 
+    private ApplicationService $applicationService;
+
+    public function boot(ApplicationService $applicationService): void
+    {
+        $this->applicationService = $applicationService;
+    }
+
     public function mount(string $vacancyId): void
     {
         $this->vacancy = Vacancy::findOrFail($vacancyId);
@@ -24,34 +32,42 @@ class ApplicationForm extends Component
 
     public function checkStatus(): void
     {
-        $intern = auth()->user();
-        $profile = $intern->internProfile;
+        $user = auth()->user();
 
-        $required = \App\Models\InternProfile::requiredFields();
-        $this->profileComplete = $profile && collect($required)->every(fn($f) => !empty($profile->{$f}));
+        $this->profileComplete = $user->internProfile !== null
+            && $user->internProfile->full_name
+            && $user->internProfile->institution_name;
 
-        $existing = $intern->applications()->where('vacancy_id', $this->vacancy->id)->first();
+        $existing = Application::where('intern_id', $user->id)
+            ->where('vacancy_id', $this->vacancy->id)
+            ->first();
 
         if ($existing) {
+            $this->hasApplied = true;
             $this->applicationStatus = $existing->status;
-            $this->hasApplied = !in_array($existing->status, ['rejected', 'cancelled']);
-        } else {
-            $this->applicationStatus = null;
-            $this->hasApplied = false;
         }
     }
 
-    public function apply(ApplicationService $service): void
+    public function submit(): void
     {
+        if (!$this->profileComplete) {
+            $this->errorMessage = 'Lengkapi profil Anda sebelum mendaftar.';
+            return;
+        }
+
         try {
-            $application = $service->apply(auth()->user(), $this->vacancy->id);
-            auth()->user()->notify(new ApplicationNotification($application, 'submitted'));
+            $application = $this->applicationService->apply(
+                $this->vacancy,
+                auth()->user()
+            );
+
             $this->hasApplied = true;
-            $this->applicationStatus = 'submitted';
-            $this->errorMessage = null;
-            session()->flash('success', 'Lamaran berhasil dikirim!');
+            $this->applicationStatus = $application->status;
+
+            auth()->user()->notify(new ApplicationNotification($application, 'submitted'));
+
+            $this->dispatch('toast', message: 'Lamaran berhasil dikirim!', type: 'success');
         } catch (\Exception $e) {
-            Log::warning("[ApplicationForm] apply error: {$e->getMessage()}");
             $this->errorMessage = $e->getMessage();
         }
     }

@@ -3,9 +3,8 @@
 namespace App\Livewire\Admin;
 
 use App\Models\User;
+use App\Services\UserService;
 use Livewire\Component;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class UserForm extends Component
 {
@@ -18,6 +17,20 @@ class UserForm extends Component
 
     public bool $isEditing = false;
 
+    private UserService $userService;
+
+    public function boot(UserService $userService): void
+    {
+        $this->userService = $userService;
+    }
+
+    protected $rules = [
+        'email' => 'required|email|max:255|unique:users,email',
+        'role' => 'required|in:admin,supervisor,intern',
+        'password' => 'required|min:8|confirmed',
+        'is_active' => 'boolean',
+    ];
+
     public function mount(?string $id = null): void
     {
         if ($id) {
@@ -29,61 +42,56 @@ class UserForm extends Component
         }
     }
 
-    public function rules(): array
+    public function updated($propertyName): void
     {
-        $uniqueRule = $this->isEditing
-            ? 'unique:users,email,' . $this->user->id
-            : 'unique:users,email';
-
-        $passwordRule = $this->isEditing ? 'nullable|min:8|confirmed' : 'required|min:8|confirmed';
-
-        return [
-            'email' => ['required', 'email', $uniqueRule],
-            'password' => $passwordRule,
-            'password_confirmation' => $this->isEditing ? 'nullable' : 'required',
-            'role' => 'required|in:admin,supervisor,intern',
-            'is_active' => 'boolean',
-        ];
+        if ($this->isEditing) {
+            $this->validateOnly($propertyName, [
+                'email' => 'required|email|max:255|unique:users,email,' . $this->user->id,
+                'role' => 'required|in:admin,supervisor,intern',
+                'password' => 'nullable|min:8|confirmed',
+                'is_active' => 'boolean',
+            ]);
+        } else {
+            $this->validateOnly($propertyName);
+        }
     }
 
     public function save(): void
     {
-        abort_unless(auth()->user()->isAdmin(), 403);
-
-        $this->validate();
-
         if ($this->isEditing) {
-            $data = [
+            $this->validate([
+                'email' => 'required|email|max:255|unique:users,email,' . $this->user->id,
+                'role' => 'required|in:admin,supervisor,intern',
+                'password' => 'nullable|min:8|confirmed',
+                'is_active' => 'boolean',
+            ]);
+            $this->userService->update($this->user, [
                 'email' => $this->email,
                 'role' => $this->role,
                 'is_active' => $this->is_active,
-            ];
-
-            if ($this->password) {
-                $data['password'] = Hash::make($this->password);
-            }
-
-            $this->user->update($data);
-            session()->flash('success', 'Pengguna berhasil diperbarui.');
+                'password' => $this->password,
+            ]);
+            $this->dispatch('toast', message: 'Pengguna berhasil diperbarui.', type: 'success');
         } else {
-            $user = User::create([
-                'id' => (string) Str::uuid(),
+            $this->validate();
+            $this->userService->create([
                 'email' => $this->email,
-                'password' => Hash::make($this->password),
                 'role' => $this->role,
+                'password' => $this->password,
                 'is_active' => $this->is_active,
             ]);
-
-            if ($this->role === 'intern') {
-                $user->internProfile()->create(['id' => (string) Str::uuid()]);
-            } elseif ($this->role === 'supervisor') {
-                $user->supervisorProfile()->create(['id' => (string) Str::uuid()]);
-            }
-
-            session()->flash('success', 'Pengguna berhasil dibuat.');
+            $this->dispatch('toast', message: 'Pengguna berhasil dibuat.', type: 'success');
+            $this->resetForm();
         }
+    }
 
-        $this->redirect(route('admin.users'), navigate: true);
+    public function resetForm(): void
+    {
+        $this->reset(['email', 'role', 'password', 'password_confirmation']);
+        $this->role = 'intern';
+        $this->is_active = true;
+        $this->isEditing = false;
+        $this->user = null;
     }
 
     public function render()

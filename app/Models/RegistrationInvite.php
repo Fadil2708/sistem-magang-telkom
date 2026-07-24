@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class RegistrationInvite extends Model
 {
-    use HasUuid;
+    use HasUuid, Auditable;
 
     protected $fillable = [
         'code', 'role', 'email', 'used_at', 'expires_at', 'created_by',

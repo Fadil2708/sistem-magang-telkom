@@ -2,11 +2,7 @@
 
 namespace App\Livewire\Intern;
 
-use App\Models\Application;
-use App\Models\Certificate;
-use App\Models\FinalReport;
-use App\Models\Internship;
-use App\Models\Logbook;
+use App\Services\DashboardService;
 use Livewire\Component;
 
 class DashboardStats extends Component
@@ -19,35 +15,17 @@ class DashboardStats extends Component
     public bool $hasCertificate = false;
     public string $certificateId = '';
 
-    public function mount(): void
+    public function mount(DashboardService $dashboardService): void
     {
-        $userId = auth()->id();
+        $stats = $dashboardService->getInternStats(auth()->id());
 
-        $latestApp = Application::where('intern_id', $userId)->latest()->first();
-        $this->applicationStatus = $latestApp?->status ?? '-';
-
-        $latestInternship = Internship::where('intern_id', $userId)->latest()->first();
-        $this->internshipStatus = $latestInternship?->status ?? '-';
-
-        if ($latestInternship) {
-            $this->logbookToday = Logbook::where('intern_id', $userId)
-                ->where('internship_id', $latestInternship->id)
-                ->whereDate('activity_date', today())
-                ->exists();
-
-            $this->logbookThisMonth = Logbook::where('intern_id', $userId)
-                ->where('internship_id', $latestInternship->id)
-                ->whereMonth('activity_date', now()->month)
-                ->whereYear('activity_date', now()->year)
-                ->count();
-
-            $report = FinalReport::where('internship_id', $latestInternship->id)->first();
-            $this->reportStatus = $report?->supervisor_approval ?? '-';
-
-            $cert = Certificate::where('intern_id', $userId)->where('internship_id', $latestInternship->id)->first();
-            $this->hasCertificate = $cert !== null;
-            $this->certificateId = $cert?->id ?? '';
-        }
+        $this->applicationStatus = $stats['applicationStatus'];
+        $this->internshipStatus = $stats['internshipStatus'];
+        $this->logbookToday = $stats['logbookToday'];
+        $this->logbookThisMonth = $stats['logbookThisMonth'];
+        $this->reportStatus = $stats['reportStatus'];
+        $this->hasCertificate = $stats['hasCertificate'];
+        $this->certificateId = $stats['certificateId'];
     }
 
     public function render()

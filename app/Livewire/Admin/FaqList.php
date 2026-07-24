@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Faq;
+use App\Services\FaqService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -14,6 +15,19 @@ class FaqList extends Component
     public $question = '';
     public $answer = '';
     public $sort_order = 0;
+
+    private FaqService $faqService;
+
+    public function boot(FaqService $faqService): void
+    {
+        $this->faqService = $faqService;
+    }
+
+    protected $rules = [
+        'question' => 'required|string|max:255',
+        'answer' => 'required|string',
+        'sort_order' => 'required|integer|min:0',
+    ];
 
     public function create(): void
     {
@@ -34,21 +48,19 @@ class FaqList extends Component
 
     public function save(): void
     {
-        $this->validate([
-            'question' => 'required|string|max:255',
-            'answer' => 'required|string',
-            'sort_order' => 'required|integer|min:0',
-        ]);
+        abort_unless(auth()->user()->isAdmin(), 403);
+        $this->validate();
 
         if ($this->editingId === 'new') {
-            Faq::create([
+            $this->faqService->create([
                 'question' => $this->question,
                 'answer' => $this->answer,
                 'sort_order' => $this->sort_order,
             ]);
             $this->dispatch('toast', message: 'FAQ berhasil ditambahkan.', type: 'success');
         } else {
-            Faq::findOrFail($this->editingId)->update([
+            $faq = Faq::findOrFail($this->editingId);
+            $this->faqService->update($faq, [
                 'question' => $this->question,
                 'answer' => $this->answer,
                 'sort_order' => $this->sort_order,
@@ -59,20 +71,15 @@ class FaqList extends Component
         $this->resetForm();
     }
 
-    public function toggleActive(string $id): void
+    public function delete(string $id): void
     {
+        abort_unless(auth()->user()->isAdmin(), 403);
         $faq = Faq::findOrFail($id);
-        $faq->update(['is_active' => !$faq->is_active]);
-        $status = $faq->fresh()->is_active ? 'ditayangkan' : 'disembunyikan';
-        $this->dispatch('toast', message: "FAQ berhasil {$status}.", type: 'success');
+        $this->faqService->delete($faq);
+        $this->dispatch('toast', message: 'FAQ berhasil dihapus.', type: 'success');
     }
 
-    public function cancel(): void
-    {
-        $this->resetForm();
-    }
-
-    private function resetForm(): void
+    public function resetForm(): void
     {
         $this->editingId = null;
         $this->question = '';
@@ -82,8 +89,7 @@ class FaqList extends Component
 
     public function render()
     {
-        return view('livewire.admin.faq-list', [
-            'faqs' => Faq::ordered()->paginate(20),
-        ]);
+        $faqs = $this->faqService->getPaginatedList();
+        return view('livewire.admin.faq-list', compact('faqs'));
     }
 }

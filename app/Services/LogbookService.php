@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\FinalReport;
 use App\Models\Internship;
 use App\Models\Logbook;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class LogbookService
@@ -16,100 +19,103 @@ class LogbookService
         'approved'           => [],
     ];
 
+    public function getAdminPaginatedList(string $search = '', string $filterStatus = ''): LengthAwarePaginator
+    {
+        return Logbook::with(['intern.internProfile', 'internship.vacancy'])
+            ->when($search, fn($q) => $q->whereHas('intern.internProfile', fn($p) =>
+                $p->where('full_name', 'like', "%{$search}%")
+            ))
+            ->when($filterStatus, fn($q) => $q->where('validation_status', $filterStatus))
+            ->latest('activity_date')
+            ->paginate(15);
+    }
+
+    public function getSupervisorPaginatedList(string $supervisorId, string $filterStatus = '', string $search = ''): LengthAwarePaginator
+    {
+        return Logbook::with(['intern.internProfile', 'internship.vacancy'])
+            ->whereHas('internship', fn(Builder $q) => $q->where('supervisor_id', $supervisorId))
+            ->when($search, fn($q) => $q->whereHas('intern.internProfile', fn($p) =>
+                $p->where('full_name', 'like', "%{$search}%")
+            ))
+            ->when($filterStatus, fn($q) => $q->where('validation_status', $filterStatus))
+            ->latest('activity_date')
+            ->paginate(15);
+    }
+
     public function create(string $internshipId, User $intern, array $data): Logbook
     {
         $internship = Internship::where('intern_id', $intern->id)
             ->where('status', 'active')
-            ->findOrFail($internshipId);
+            ->firstOrFail();
 
-        $this->ensureNoDuplicateDate($internshipId, $data['activity_date']);
+        $data['internship_id'] = $internshipId;
+        $data['intern_id'] = $intern->id;
+        $data['validation_status'] = 'draft';
 
-        return DB::transaction(function () use ($internshipId, $intern, $data) {
-            return Logbook::create([
-                'internship_id' => $internshipId,
-                'intern_id' => $intern->id,
-                'activity_date' => $data['activity_date'],
-                'activities' => $data['activities'],
-                'output' => $data['output'],
-                'validation_status' => 'draft',
-            ]);
-        });
+        return Logbook::create($data);
     }
 
-    public function update(Logbook $logbook, User $intern, array $data): Logbook
+    public function update(Logbook $logbook, array $data, User $intern): void
     {
         if ($logbook->intern_id !== $intern->id) {
-            throw new \Exception('Anda tidak berhak mengubah logbook ini.');
+            throw new \Exception('Unauthorized.');
         }
 
-        if (!in_array($logbook->validation_status, ['draft', 'revision_requested'], true)) {
-            throw new \Exception('Logbook hanya bisa diedit saat status draft atau revisi.');
+        $allowedStates = ['draft', 'revision_requested'];
+        if (!in_array($logbook->validation_status, $allowedStates)) {
+            throw new \Exception('Logbook sudah tidak bisa diedit.');
         }
 
-        return DB::transaction(function () use ($logbook, $data) {
-            $logbook->update($data);
-            return $logbook->fresh();
-        });
+        $logbook->update($data);
     }
 
-    public function submit(Logbook $logbook, User $intern): Logbook
+    public function submit(Logbook $logbook, User $intern): void
     {
         if ($logbook->intern_id !== $intern->id) {
-            throw new \Exception('Anda tidak berhak mengirim logbook ini.');
+            throw new \Exception('Unauthorized.');
         }
 
-        $this->validateTransition($logbook, 'submitted');
+        if (!in_array('submitted', self::TRANSITIONS[$logbook->validation_status] ?? [])) {
+            throw new \Exception('Logbook sudah tidak bisa dikirim.');
+        }
 
-        return DB::transaction(function () use ($logbook) {
-            $logbook->update(['validation_status' => 'submitted']);
-            return $logbook->fresh();
-        });
+        $logbook->update(['validation_status' => 'submitted']);
     }
 
-    public function review(Logbook $logbook, User $supervisor, string $action, ?string $notes = null): Logbook
+    public function validateTransition(Logbook $logbook, string $newStatus): void
     {
-        $internship = $logbook->internship;
-
-        if ($internship->supervisor_id === null || $internship->supervisor_id !== $supervisor->id) {
-            throw new \Exception('Anda tidak berhak mereview logbook ini.');
-        }
-
-        $this->validateTransition($logbook, $action);
-
-        if ($action === 'revision_requested' && empty($notes)) {
-            throw new \Exception('Catatan revisi wajib diisi.');
-        }
-
-        return DB::transaction(function () use ($logbook, $action, $notes) {
-            $logbook->update([
-                'validation_status' => $action,
-                'supervisor_notes' => $notes,
-                'reviewed_at' => now(),
-            ]);
-            return $logbook->fresh();
-        });
-    }
-
-    private function ensureNoDuplicateDate(string $internshipId, string $activityDate): void
-    {
-        $exists = Logbook::where('internship_id', $internshipId)
-            ->where('activity_date', $activityDate)
-            ->exists();
-
-        if ($exists) {
-            throw new \Exception('Anda sudah mengisi logbook untuk tanggal ini.');
+        if (!in_array($newStatus, self::TRANSITIONS[$logbook->validation_status] ?? [])) {
+            throw new \Exception('Status transisi tidak valid.');
         }
     }
 
-    private function validateTransition(Logbook $logbook, string $targetStatus): void
+    public function getAdminPaginatedList(string $filterStatus = '', string $search = ''): LengthAwarePaginator
     {
-        $current = $logbook->validation_status;
-        $allowed = self::TRANSITIONS[$current] ?? [];
+        return Logbook::with(['intern.internProfile', 'internship.vacancy'])
+            ->when($search, fn($q) => $q->whereHas('intern.internProfile', fn($p) =>
+                $p->where('full_name', 'like', "%{$search}%")
+            ))
+            ->when($filterStatus, fn($q) => $q->where('validation_status', $filterStatus))
+            ->latest()
+            ->paginate(10);
+    }
 
-        if (!in_array($targetStatus, $allowed, true)) {
-            throw new \Exception(
-                "Tidak bisa mengubah status logbook dari {$current} ke {$targetStatus}."
-            );
-        }
+    public function getInternPaginatedList(string $internId): LengthAwarePaginator
+    {
+        return Logbook::where('intern_id', $internId)
+            ->orderBy('activity_date', 'desc')
+            ->paginate(10);
+    }
+
+    public function getSupervisorPaginatedList(string $supervisorId, string $filterStatus = '', string $search = ''): LengthAwarePaginator
+    {
+        return Logbook::with(['intern.internProfile', 'internship.vacancy'])
+            ->whereHas('internship', fn($q) => $q->where('supervisor_id', $supervisorId))
+            ->when($search, fn($q) => $q->whereHas('intern.internProfile', fn($p) =>
+                $p->where('full_name', 'like', "%{$search}%")
+            ))
+            ->when($filterStatus, fn($q) => $q->where('validation_status', $filterStatus))
+            ->latest()
+            ->paginate(10);
     }
 }

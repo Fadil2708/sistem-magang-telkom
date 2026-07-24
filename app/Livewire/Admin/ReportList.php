@@ -12,18 +12,11 @@ class ReportList extends Component
 
     public $filterStatus = '';
 
-    public function updatingFilterStatus(): void
-    {
-        $this->resetPage();
-    }
+    public function updatingFilterStatus(): void { $this->resetPage(); }
 
     public function render()
     {
-        $reports = FinalReport::with([
-            'intern.internProfile',
-            'internship.vacancy',
-            'internship.supervisor.supervisorProfile',
-        ])
+        $reports = FinalReport::with(['intern.internProfile', 'internship.vacancy'])
             ->when($this->filterStatus, fn($q) => $q->where('supervisor_approval', $this->filterStatus))
             ->latest('submitted_at')
             ->paginate(10);

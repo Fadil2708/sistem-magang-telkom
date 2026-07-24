@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\RegistrationInvite;
+use App\Services\InviteService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -12,20 +13,24 @@ class InviteList extends Component
 
     protected $paginationTheme = 'tailwind';
 
+    private InviteService $inviteService;
+
+    public function boot(InviteService $inviteService): void
+    {
+        $this->inviteService = $inviteService;
+    }
+
     public function generate(): void
     {
         abort_unless(auth()->user()->isAdmin(), 403);
-        $invite = RegistrationInvite::generate('supervisor', expiresAt: now()->addHour());
+        $invite = $this->inviteService->generate('supervisor', null);
         session()->flash('inviteCode', $invite->code);
         $this->dispatch('toast', message: 'Kode undangan berhasil dibuat.', type: 'success');
     }
 
     public function render()
     {
-        return view('livewire.admin.invite-list', [
-            'invites' => RegistrationInvite::with('creator')
-                ->latest()
-                ->paginate(20),
-        ]);
+        $invites = $this->inviteService->getPaginatedList();
+        return view('livewire.admin.invite-list', compact('invites'));
     }
 }

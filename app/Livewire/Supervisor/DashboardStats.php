@@ -2,47 +2,26 @@
 
 namespace App\Livewire\Supervisor;
 
-use App\Models\FinalReport;
-use App\Models\Internship;
-use App\Models\Logbook;
+use App\Services\DashboardService;
 use Livewire\Component;
 
 class DashboardStats extends Component
 {
     public int $totalInterns = 0;
     public int $pendingLogbooks = 0;
-    public int $approvedLogbooks = 0;
     public int $pendingReports = 0;
-    public int $totalLogbooks = 0;
-    public int $revisionLogbooks = 0;
+    public int $pendingEvaluations = 0;
+    public $activeInternships;
 
-    public function mount(): void
+    public function mount(DashboardService $dashboardService): void
     {
-        $supervisorId = auth()->id();
+        $stats = $dashboardService->getSupervisorStats(auth()->id());
 
-        $this->totalInterns = Internship::where('supervisor_id', $supervisorId)
-            ->where('status', 'active')
-            ->count();
-
-        $this->pendingLogbooks = Logbook::whereHas('internship', fn($q) =>
-            $q->where('supervisor_id', $supervisorId)
-        )->where('validation_status', 'submitted')->count();
-
-        $this->approvedLogbooks = Logbook::whereHas('internship', fn($q) =>
-            $q->where('supervisor_id', $supervisorId)
-        )->where('validation_status', 'approved')->count();
-
-        $this->revisionLogbooks = Logbook::whereHas('internship', fn($q) =>
-            $q->where('supervisor_id', $supervisorId)
-        )->where('validation_status', 'revision_requested')->count();
-
-        $this->totalLogbooks = Logbook::whereHas('internship', fn($q) =>
-            $q->where('supervisor_id', $supervisorId)
-        )->count();
-
-        $this->pendingReports = FinalReport::whereHas('internship', fn($q) =>
-            $q->where('supervisor_id', $supervisorId)
-        )->where('supervisor_approval', 'pending')->count();
+        $this->totalInterns = $stats['totalInterns'];
+        $this->pendingLogbooks = $stats['pendingLogbooks'];
+        $this->pendingReports = $stats['pendingReports'];
+        $this->pendingEvaluations = $stats['pendingEvaluations'];
+        $this->activeInternships = $stats['activeInternships'];
     }
 
     public function render()

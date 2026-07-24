@@ -7,10 +7,11 @@ use App\Traits\HasUuid;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Application extends Model
 {
-    use HasFactory, HasUuid, Auditable;
+    use HasFactory, HasUuid, Auditable, SoftDeletes;
 
     protected $fillable = [
         'intern_id', 'vacancy_id', 'status',

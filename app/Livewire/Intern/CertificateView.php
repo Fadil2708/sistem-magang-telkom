@@ -3,26 +3,25 @@
 namespace App\Livewire\Intern;
 
 use App\Models\Certificate;
-use App\Models\Internship;
+use App\Models\Evaluation;
 use Livewire\Component;
 
 class CertificateView extends Component
 {
-    public ?Certificate $certificate = null;
-    public ?Internship $internship = null;
-    public bool $hasCompletedInternship = false;
+    public $certificate = null;
+    public $evaluation = null;
 
     public function mount(): void
     {
-        $this->internship = Internship::where('intern_id', auth()->id())
-            ->where('status', 'completed')
+        $this->certificate = Certificate::with(['intern.internProfile', 'issuedBy'])
+            ->where('intern_id', auth()->id())
             ->latest()
             ->first();
 
-        $this->hasCompletedInternship = $this->internship !== null;
-
-        if ($this->internship) {
-            $this->certificate = Certificate::where('internship_id', $this->internship->id)->first();
+        if ($this->certificate) {
+            $this->evaluation = Evaluation::where('internship_id', $this->certificate->internship_id)
+                ->with('supervisor.supervisorProfile')
+                ->first();
         }
     }
 

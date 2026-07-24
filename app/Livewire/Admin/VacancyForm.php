@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Vacancy;
+use App\Services\VacancyService;
 use Livewire\Component;
 
 class VacancyForm extends Component
@@ -19,6 +20,25 @@ class VacancyForm extends Component
     public string $status = 'draft';
 
     public bool $isEditing = false;
+
+    private VacancyService $vacancyService;
+
+    public function boot(VacancyService $vacancyService): void
+    {
+        $this->vacancyService = $vacancyService;
+    }
+
+    protected $rules = [
+        'title' => 'required|string|max:255',
+        'division' => 'required|string|max:255',
+        'description' => 'required|string',
+        'qualifications' => 'required|string',
+        'quota' => 'required|integer|min:1',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after_or_equal:start_date',
+        'application_deadline' => 'required|date|before_or_equal:end_date',
+        'status' => 'required|in:draft,open,closed',
+    ];
 
     public function mount(?string $id = null): void
     {
@@ -37,29 +57,11 @@ class VacancyForm extends Component
         }
     }
 
-    public function rules(): array
-    {
-        return [
-            'title' => 'required|string|max:255',
-            'division' => 'nullable|string|max:255',
-            'description' => 'required|string',
-            'qualifications' => 'required|string',
-            'quota' => 'required|integer|min:1',
-            'start_date' => ['required', 'date', $this->isEditing ? 'nullable' : 'after_or_equal:today'],
-            'end_date' => 'required|date|after:start_date',
-            'application_deadline' => 'required|date|before:start_date',
-            'status' => 'required|in:draft,open,closed',
-        ];
-    }
-
     public function save(): void
     {
-        abort_unless(auth()->user()->isAdmin(), 403);
-
         $this->validate();
 
         $data = [
-            'created_by' => auth()->id(),
             'title' => $this->title,
             'division' => $this->division,
             'description' => $this->description,
@@ -72,14 +74,22 @@ class VacancyForm extends Component
         ];
 
         if ($this->isEditing) {
-            $this->vacancy->update($data);
+            $this->vacancyService->update($this->vacancy, $data);
             $this->dispatch('toast', message: 'Lowongan berhasil diperbarui.', type: 'success');
         } else {
-            Vacancy::create($data);
+            $this->vacancyService->create($data, auth()->id());
             $this->dispatch('toast', message: 'Lowongan berhasil dibuat.', type: 'success');
+            $this->resetForm();
         }
+    }
 
-        $this->redirect(route('admin.vacancies.index'), navigate: true);
+    public function resetForm(): void
+    {
+        $this->reset(['title', 'division', 'description', 'qualifications', 'quota', 'start_date', 'end_date', 'application_deadline', 'status']);
+        $this->quota = 1;
+        $this->status = 'draft';
+        $this->isEditing = false;
+        $this->vacancy = null;
     }
 
     public function render()

@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\Logbook;
+use App\Services\LogbookService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,19 +13,19 @@ class LogbookList extends Component
     public $filterStatus = '';
     public $search = '';
 
+    private LogbookService $logbookService;
+
+    public function boot(LogbookService $logbookService): void
+    {
+        $this->logbookService = $logbookService;
+    }
+
     public function updatingFilterStatus(): void { $this->resetPage(); }
     public function updatingSearch(): void { $this->resetPage(); }
 
     public function render()
     {
-        $logbooks = Logbook::with(['intern.internProfile', 'internship.vacancy'])
-            ->when($this->search, fn($q) => $q->whereHas('intern.internProfile', fn($p) =>
-                $p->where('full_name', 'like', "%{$this->search}%")
-            ))
-            ->when($this->filterStatus, fn($q) => $q->where('validation_status', $this->filterStatus))
-            ->orderBy('activity_date', 'desc')
-            ->paginate(15);
-
+        $logbooks = $this->logbookService->getAdminPaginatedList($this->search, $this->filterStatus);
         return view('livewire.admin.logbook-list', compact('logbooks'));
     }
 }

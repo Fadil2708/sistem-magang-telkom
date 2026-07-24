@@ -3,149 +3,93 @@
 namespace App\Livewire\Supervisor;
 
 use App\Models\Evaluation;
-use App\Models\Internship;
+use App\Services\EvaluationService;
 use Livewire\Component;
 
 class EvaluationForm extends Component
 {
     public ?string $internshipId = null;
-    public ?Internship $internship = null;
-    public ?Evaluation $evaluation = null;
-    public bool $isLocked = false;
+    public $internship;
+    public $evaluation;
+    public $completedInternships;
 
-    public string $soft_skill_score = '';
-    public string $hard_skill_score = '';
-    public string $attendance_score = '';
-    public string $attitude_score = '';
+    public bool $showForm = false;
+
+    public float $soft_skill_score = 0;
+    public float $hard_skill_score = 0;
+    public float $attendance_score = 0;
+    public float $attitude_score = 0;
     public string $remarks = '';
-    public bool $confirmingSave = false;
 
-    protected function rules(): array
+    private EvaluationService $evaluationService;
+
+    public function boot(EvaluationService $evaluationService): void
     {
-        return [
-            'soft_skill_score' => 'required|numeric|min:0|max:100',
-            'hard_skill_score' => 'required|numeric|min:0|max:100',
-            'attendance_score' => 'required|numeric|min:0|max:100',
-            'attitude_score'   => 'required|numeric|min:0|max:100',
-            'remarks'          => 'nullable|string|max:1000',
-        ];
+        $this->evaluationService = $evaluationService;
     }
 
-    private function toast(string $message, string $type = 'success'): void
-    {
-        $this->dispatch('toast', message: $message, type: $type);
-    }
+    protected $rules = [
+        'soft_skill_score' => 'required|numeric|min:0|max:100',
+        'hard_skill_score' => 'required|numeric|min:0|max:100',
+        'attendance_score' => 'required|numeric|min:0|max:100',
+        'attitude_score' => 'required|numeric|min:0|max:100',
+        'remarks' => 'nullable|string',
+    ];
 
     public function mount(?string $internshipId = null): void
     {
-        if (!$internshipId) {
-            return;
-        }
+        $data = $this->evaluationService->getSupervisorEvaluations(auth()->id(), $internshipId);
 
+        $this->internship = $data['internship'];
+        $this->evaluation = $data['evaluation'];
+        $this->completedInternships = $data['completedInternships'];
         $this->internshipId = $internshipId;
-        $this->internship = Internship::where('id', $internshipId)
-            ->where('supervisor_id', auth()->id())
-            ->with(['intern.internProfile', 'vacancy', 'evaluation', 'certificate'])
-            ->first();
 
-        if (!$this->internship) {
-            $this->toast('Anda tidak berhak mengakses data ini.', 'error');
-            return;
-        }
-
-        $this->evaluation = $this->internship->evaluation;
-        $this->isLocked = $this->evaluation?->evaluated_at !== null || $this->internship->certificate !== null;
-
-        if ($this->evaluation) {
-            $this->soft_skill_score = (string) $this->evaluation->soft_skill_score;
-            $this->hard_skill_score = (string) $this->evaluation->hard_skill_score;
-            $this->attendance_score = (string) $this->evaluation->attendance_score;
-            $this->attitude_score = (string) $this->evaluation->attitude_score;
-            $this->remarks = $this->evaluation->remarks ?? '';
+        if ($data['evaluation']) {
+            $this->showForm = true;
+            $this->soft_skill_score = $data['evaluation']->soft_skill_score;
+            $this->hard_skill_score = $data['evaluation']->hard_skill_score;
+            $this->attendance_score = $data['evaluation']->attendance_score;
+            $this->attitude_score = $data['evaluation']->attitude_score;
+            $this->remarks = $data['evaluation']->remarks ?? '';
         }
     }
 
-    public function confirmSave(): void
+    public function selectInternship(string $id): void
     {
-        if ($this->isLocked) {
-            $this->toast('Tidak bisa mengubah penilaian karena sertifikat sudah diterbitkan.', 'error');
-            return;
-        }
-
-        if (!$this->internship) {
-            $this->toast('Data magang tidak ditemukan.', 'error');
-            return;
-        }
-
-        $fresh = Internship::where('id', $this->internship->id)
-            ->where('supervisor_id', auth()->id())
-            ->exists();
-
-        if (!$fresh) {
-            $this->toast('Anda tidak berhak menilai magang ini.', 'error');
-            return;
-        }
-
-        $this->validate();
-        $this->confirmingSave = true;
+        $this->mount($id);
     }
 
     public function save(): void
     {
-        $this->confirmingSave = false;
+        $this->validate();
 
-        if ($this->isLocked) {
-            $this->toast('Penilaian sudah terkunci.', 'error');
-            return;
+        if ($this->evaluation) {
+            $this->evaluation->update([
+                'soft_skill_score' => $this->soft_skill_score,
+                'hard_skill_score' => $this->hard_skill_score,
+                'attendance_score' => $this->attendance_score,
+                'attitude_score' => $this->attitude_score,
+                'remarks' => $this->remarks,
+            ]);
+        } else {
+            $this->evaluation = Evaluation::create([
+                'internship_id' => $this->internshipId,
+                'supervisor_id' => auth()->id(),
+                'soft_skill_score' => $this->soft_skill_score,
+                'hard_skill_score' => $this->hard_skill_score,
+                'attendance_score' => $this->attendance_score,
+                'attitude_score' => $this->attitude_score,
+                'remarks' => $this->remarks,
+            ]);
         }
 
-        $fresh = Internship::where('id', $this->internship->id)
-            ->where('supervisor_id', auth()->id())
-            ->exists();
-        if (!$fresh) {
-            $this->toast('Anda tidak berhak menilai magang ini.', 'error');
-            return;
-        }
-
-        $evaluation = new Evaluation();
-        $evaluation->soft_skill_score = $s;
-        $evaluation->hard_skill_score = $h;
-        $evaluation->attendance_score = $att;
-        $evaluation->attitude_score = $ati;
-        $evaluation->calculateFinalScore();
-
-        $data = [
-            'internship_id' => $this->internship->id,
-            'supervisor_id' => auth()->id(),
-            'soft_skill_score' => $s,
-            'hard_skill_score' => $h,
-            'attendance_score' => $att,
-            'attitude_score' => $ati,
-            'final_score' => $evaluation->final_score,
-            'grade' => $evaluation->grade,
-            'remarks' => $this->remarks ?: null,
-        ];
-
-        $evaluation = Evaluation::updateOrCreate(
-            ['internship_id' => $this->internship->id],
-            $data
-        );
-
-        $this->evaluation = $evaluation->fresh();
-        $this->toast('Penilaian berhasil disimpan. Nilai akhir: ' . number_format($evaluation->final_score, 0) . ' (Grade: ' . $evaluation->grade . ')', 'success');
+        $this->evaluationService->calculateScore($this->evaluation);
+        $this->dispatch('toast', message: 'Evaluasi berhasil disimpan.', type: 'success');
     }
 
     public function render()
     {
-        $internships = collect();
-        if (!$this->internshipId) {
-            $internships = Internship::where('supervisor_id', auth()->id())
-                ->where('status', 'completed')
-                ->with(['intern.internProfile', 'vacancy', 'evaluation'])
-                ->latest()
-                ->get();
-        }
-
-        return view('livewire.supervisor.evaluation-form', compact('internships'));
+        return view('livewire.supervisor.evaluation-form');
     }
 }

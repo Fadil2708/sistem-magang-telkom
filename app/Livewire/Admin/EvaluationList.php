@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\Evaluation;
+use App\Services\EvaluationService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -12,22 +12,18 @@ class EvaluationList extends Component
 
     public $filterGrade = '';
 
-    public function updatingFilterGrade(): void
+    private EvaluationService $evaluationService;
+
+    public function boot(EvaluationService $evaluationService): void
     {
-        $this->resetPage();
+        $this->evaluationService = $evaluationService;
     }
+
+    public function updatingFilterGrade(): void { $this->resetPage(); }
 
     public function render()
     {
-        $evaluations = Evaluation::with([
-            'internship.intern.internProfile',
-            'internship.vacancy',
-            'supervisor.supervisorProfile',
-        ])
-            ->when($this->filterGrade, fn($q) => $q->where('grade', $this->filterGrade))
-            ->latest()
-            ->paginate(10);
-
+        $evaluations = $this->evaluationService->getAdminPaginatedList($this->filterGrade);
         return view('livewire.admin.evaluation-list', compact('evaluations'));
     }
 }
